@@ -21,9 +21,18 @@ logger = logging.getLogger(__name__)
 
 
 class TempVoice(commands.Cog):
+    """
+    Temporary Voice Channels
+
+    The bot will monitor text channels that it can see,
+    when you join the Lobby voice channel it will create a
+    channel and move you to it with the same name of your
+    last text channel message.
+    """
+
     def __init__(self, client):
         self.client = client
-        self.name = "tempvoice"
+        self.name = self.qualified_name
 
         Database.readSettings(self)
 
@@ -45,8 +54,12 @@ class TempVoice(commands.Cog):
         if Database.Cogs[self.name].get(guild.id, False):
             del Database.Cogs[self.name][guild.id]
 
+    # @commands.command()
+    # async def lobby(self, ctx):
+
     @commands.Cog.listener()
     async def on_message(self, message):
+
         # Guard Clause
         if (
             message.guild == None  # Not in a guild means DM or Group chat.
