@@ -158,8 +158,6 @@ class TempVoice(commands.Cog):
 
             if not last_message_channels.get(member.id, False):
                 # User still hasn't joined a channel.
-                # Kick user from Lobby TODO
-                Utils.starprint(f"Kicking {member} from Lobby")
                 await member.move_to(None, reason="Idling in the Lobby")
 
                 return
