@@ -110,6 +110,23 @@ class Images(commands.Cog):
                         # Break out of the while True loop
                         return
 
+    @commands.command()
+    @Permissions.check(role="everyone")
+    async def fox(self, ctx):
+        """
+        Returns a Random Fox from https://randomfox.ca/
+        """
+        async with ctx.channel.typing():
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get("https://randomfox.ca/floof/") as r:
+                    data = await r.json()
+
+                    embed = discord.Embed(title="Floof")
+                    embed.set_image(url=data["image"])
+                    embed.set_footer(text="https://randomfox.ca/")
+
+                    await ctx.send(embed=embed)
+
     @cat.error
     @dog.error
     async def _error(self, ctx, error):
