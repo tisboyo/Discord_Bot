@@ -242,9 +242,18 @@ class TempVoice(commands.Cog):
 
         if channel is None:  # Create it
             # TODO Add reason for creation
-            channel = await guild.create_voice_channel(
-                last_message.channel.name, category=category, overwrites=overwrites
-            )
+            try:
+                channel = await guild.create_voice_channel(
+                    last_message.channel.name, category=category, overwrites=overwrites
+                )
+            except discord.HTTPException as e:
+                if e.code == 50013:
+                    logger.warning(
+                        f"Missing Permissions to create voice channel in {guild}."
+                    )
+
+                    # TODO DM Server Owner for permissions.
+                return
 
         # Checking to make sure the channel actually exists, in case of a creation error
         if channel is not None:
@@ -328,6 +337,7 @@ class TempVoice(commands.Cog):
         return None
 
     # @Template.error
+
     async def _error(self, ctx, error):
         await Utils.errors(self, ctx, error)
 
