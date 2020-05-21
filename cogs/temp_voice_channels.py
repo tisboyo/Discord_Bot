@@ -145,9 +145,9 @@ class TempVoice(commands.Cog):
             )
         else:
             await member.send(
-                f"I haven't seen a message from you in the last {self.message_ttl_delta}."
+                f"I haven't seen a message from you in the last {self.message_ttl_delta}. \r\n"
                 "Could you please send a message in the channel that you "
-                "would like to create. In 60 seconds you will be removed "
+                "would like to create. \r\nIn 60 seconds you will be removed "
                 "from the Lobby."
             )
 
