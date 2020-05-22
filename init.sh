@@ -4,4 +4,4 @@ cd ~/Discord_Bot
 git pull
 git checkout $branch
 pipenv sync
-nodemon --watch ./ --watch ./cogs/ -e py --delay 5 main.py
+pipenv run nodemon --watch ./ --watch ./cogs/ -e py --delay 5 main.py

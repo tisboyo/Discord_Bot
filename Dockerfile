@@ -21,7 +21,7 @@ ENV PIP_NO_CACHE_DIR=false \
 
 
 # Pull bot from github # && chmod +x -R ~/Discord_Bot/*.py
-RUN git clone https://github.com/tisboyo/Discord_Bot.git /root/Discord_Bot && chmod +x /root/Discord_Bot/init.sh
+RUN git clone https://github.com/tisboyo/Discord_Bot.git /root/Discord_Bot
 
 # Create the working directory
 WORKDIR /root/Discord_Bot
@@ -34,9 +34,17 @@ RUN apt-get update && apt-get install -y \
 	git \
     libespeak1
 
-
+# Install nodemon
 RUN npm install -g nodemon
 
+# Setup pipenv
+RUN pipenv install
+
+# Set init.sh to executable
+RUN chmod +x /root/Discord_Bot/init.sh
+
+# Database volume
 VOLUME /root/Discord_Bot/db
 
-ENTRYPOINT ["/root/Discord_Bot/init.sh"]
+ENTRYPOINT ["/bin/sh"]
+CMD ["-c" "~/Discord_Bot/init.sh"]
