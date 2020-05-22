@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y \
 # RUN npm install -g nodemon
 
 # Setup pipenv
+RUN pip install pipenv
 RUN pipenv install
 
 # Set init.sh to executable
