@@ -7,8 +7,6 @@ verify_ssl = true
 wheel = "*"
 pylint = "*"
 black = "*"
-v = {editable = true,version = "*"}
-pypiwin32 = "*"
 
 [packages]
 pipenv = "*"
