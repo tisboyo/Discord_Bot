@@ -16,18 +16,20 @@ ENV PIP_NO_CACHE_DIR=false \
     backup_port=21 \
     backup_upload_path='/' \
     backup_ftp_username='' \
-    backup_ftp_passwd=''
+    backup_ftp_passwd='' \
+    branch='docker'
 
 
 # Pull bot from github # && chmod +x -R ~/Discord_Bot/*.py
-RUN git clone https://github.com/tisboyo/Discord_Bot.git /root/Discord_Bot
-
-# Switch Branches
-RUN git checkout docker
+RUN git clone https://github.com/tisboyo/Discord_Bot.git /root/Discord_Bot && chmod +x /root/Discord_Bot/init.sh
 
 # Create the working directory
 WORKDIR /root/Discord_Bot
 
+# Switch Branches
+RUN git checkout ${branch}
+
+# Install needed libraries
 RUN apt-get update && apt-get install -y \
 	git \
     libespeak1
