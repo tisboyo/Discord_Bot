@@ -1,5 +1,5 @@
-#FROM python:3.6
-FROM nikolaik/python-nodejs:python3.6-nodejs14
+FROM python:3.6
+# FROM nikolaik/python-nodejs:python3.6-nodejs14
 
 # Set pip to have cleaner logs and no saved cache
 ENV PIP_NO_CACHE_DIR=false \
@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
     libespeak1
 
 # Install nodemon
-RUN npm install -g nodemon
+# RUN npm install -g nodemon
 
 # Setup pipenv
 RUN pipenv install
@@ -47,4 +47,4 @@ RUN chmod +x /root/Discord_Bot/init.sh
 VOLUME /root/Discord_Bot/db
 
 ENTRYPOINT ["/bin/sh"]
-CMD ["-c" "~/Discord_Bot/init.sh"]
+CMD ["-c", "~/Discord_Bot/init.sh"]
