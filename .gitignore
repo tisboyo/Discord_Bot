@@ -78,3 +78,6 @@ cogs/test.py
 #VSCode stuff
 .venv
 .vscode
+
+# Text To Speech temporary file
+voice.wav

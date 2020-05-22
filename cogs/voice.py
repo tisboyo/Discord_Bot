@@ -8,6 +8,7 @@ import logging
 import asyncio
 import datetime
 from collections import namedtuple
+import pyttsx3
 
 import discord
 from discord.ext import commands
@@ -22,9 +23,9 @@ logger = logging.getLogger(__name__)
 # TODO Add announcement channel setting to keep a track of bot changes
 
 
-class TempVoice(commands.Cog):
+class Voice(commands.Cog):
     """
-    Temporary Voice Channels
+    Voice Channels
 
     The bot will monitor text channels that it can see,
     when you join the Lobby voice channel it will create a
@@ -45,6 +46,9 @@ class TempVoice(commands.Cog):
         self.category = "Topical Voice Chat"
 
         self.message_ttl_delta = datetime.timedelta(minutes=5)
+
+        self.tts_engine = pyttsx3.init()
+        self.lock = dict()
 
         for guild in client.guilds:
             Database.Cogs[self.name][guild.id] = dict()
@@ -80,6 +84,71 @@ class TempVoice(commands.Cog):
         last_message_channels[message.author.id] = nt(
             channel=message.channel, time=datetime.datetime.now()
         )
+
+    @commands.command()
+    @Permissions.check(role="everyone")
+    async def tts(self, ctx, *, message):
+        """
+        Send a text to speech message in the voice channel associated with the text channel.
+        """
+        self.lock[ctx.guild.id] = asyncio.Lock()
+
+        tts_engine = self.tts_engine
+        voice_channel = self.get_voice_channel_by_name(
+            ctx.guild, ctx.message.channel.name
+        )
+
+        if (
+            # Unable to find a voice channel with the name of the current text channel
+            voice_channel == None
+            # Author is not in voice at all
+            or ctx.message.author.voice == None
+            # Author is not in the right voice channel
+            or ctx.message.author.voice.channel != voice_channel
+        ):
+
+            await ctx.send(
+                f"Sorry, you have to be in voice channel with the name `{ctx.message.channel.name}`"
+            )
+            await ctx.message.add_reaction("🚫")
+            return
+
+        remove_reaction = False
+
+        if ctx.guild.me.voice is not None:
+            await ctx.message.add_reaction("⏳")
+            remove_reaction = True
+
+        while ctx.guild.me.voice is not None:
+            await asyncio.sleep(0.1)
+
+        if remove_reaction:
+            await ctx.message.remove_reaction("⏳", ctx.guild.me)
+
+        voice_client = await voice_channel.connect()
+
+        voices = tts_engine.getProperty("voices")
+
+        tts_engine.setProperty("voice", voices[1].id)
+
+        if len(message) > 50:
+            message = (
+                message[:50]
+                + f"........ you know what, fuck reading all this get a microphone {ctx.message.author.name}."
+            )
+
+        tts_engine.save_to_file(
+            f"{ctx.message.author.name} says {message}", "voice.wav"
+        )
+        tts_engine.runAndWait()
+
+        voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
+
+        while voice_client.is_playing():
+            await asyncio.sleep(0.1)
+
+        await voice_client.disconnect()
+        await ctx.message.add_reaction("✔️")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -347,5 +416,5 @@ def setup(client):
 	TempVoice setup
 	"""
     logger.info(f"Loading {__name__}...")
-    client.add_cog(TempVoice(client))
+    client.add_cog(Voice(client))
     logger.info(f"Loaded {__name__}")

@@ -8,11 +8,13 @@ wheel = "*"
 pylint = "*"
 black = "*"
 v = {editable = true,version = "*"}
+pypiwin32 = "*"
 
 [packages]
 pipenv = "*"
 aioftp = "*"
 "discord.py" = {extras = ["voice"],version = "*"}
+pyttsx3 = "*"
 
 [requires]
 python_version = "3.6"
