@@ -50,8 +50,9 @@ class Voice(commands.Cog):
         self.tts_engine = pyttsx3.init()
         self.lock = dict()
 
-        for guild in client.guilds:
-            Database.Cogs[self.name][guild.id] = dict()
+        for guild_id in Database.Main:
+            # Database.Cogs[self.name][guild.id] = dict()
+            self.lock[guild_id] = asyncio.Lock()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -91,7 +92,6 @@ class Voice(commands.Cog):
         """
         Send a text to speech message in the voice channel associated with the text channel.
         """
-        self.lock[ctx.guild.id] = asyncio.Lock()
 
         tts_engine = self.tts_engine
         voice_channel = self.get_voice_channel_by_name(
@@ -115,40 +115,46 @@ class Voice(commands.Cog):
 
         remove_reaction = False
 
-        if ctx.guild.me.voice is not None:
+        if self.lock[ctx.guild.id]:
             await ctx.message.add_reaction("⏳")
             remove_reaction = True
 
-        while ctx.guild.me.voice is not None:
-            await asyncio.sleep(0.1)
+        async with self.lock[ctx.guild.id]:
+            # Remove wait emoji
+            if remove_reaction:
+                await ctx.message.remove_reaction("⏳", ctx.guild.me)
 
-        if remove_reaction:
-            await ctx.message.remove_reaction("⏳", ctx.guild.me)
+            # Connect to the appropriate voice channel
+            voice_client = await voice_channel.connect()
 
-        voice_client = await voice_channel.connect()
+            # Set the bot's voice
+            voices = tts_engine.getProperty("voices")
+            tts_engine.setProperty("voice", voices[1].id)
 
-        voices = tts_engine.getProperty("voices")
+            # Set the bot's speed
+            tts_engine.setProperty("rate", 110)
 
-        tts_engine.setProperty("voice", voices[1].id)
+            # Set the bot's volume
 
-        if len(message) > 50:
-            message = (
-                message[:50]
-                + f"........ you know what, fuck reading all this get a microphone {ctx.message.author.name}."
+            if len(message) > 300:
+                message = (
+                    message[:300]
+                    + f"........ you know what, forget reading all this get a microphone {ctx.message.author.name}."
+                )
+
+            tts_engine.save_to_file(
+                f"{ctx.message.author.name} says {message}", "voice.wav"
             )
+            tts_engine.runAndWait()
 
-        tts_engine.save_to_file(
-            f"{ctx.message.author.name} says {message}", "voice.wav"
-        )
-        tts_engine.runAndWait()
+            voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
 
-        voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
+            while voice_client.is_playing():
+                await asyncio.sleep(0.1)
 
-        while voice_client.is_playing():
-            await asyncio.sleep(0.1)
+            await voice_client.disconnect()
 
-        await voice_client.disconnect()
-        await ctx.message.add_reaction("✔️")
+            await ctx.message.add_reaction("✔️")
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
