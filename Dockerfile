@@ -32,7 +32,8 @@ RUN git checkout ${branch}
 # Install needed libraries
 RUN apt-get update && apt-get install -y \
 	git \
-    libespeak1
+    libespeak1 \
+    ffmpeg
 
 # Install nodemon
 # RUN npm install -g nodemon
