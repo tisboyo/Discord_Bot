@@ -50,7 +50,7 @@ class Database(commands.Cog):
 
         # Ignoring pylint error about run_backup_loop not having a start member
         # the parent loop has the .start member
-        self.run_backup_loop.start()  # pylint: disable=no-member
+        # self.run_backup_loop.start()  # pylint: disable=no-member
 
     def loadDatabase(self):
         # Load all of the guild settings
