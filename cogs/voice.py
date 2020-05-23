@@ -8,7 +8,7 @@ import logging
 import asyncio
 import datetime
 from collections import namedtuple
-import pyttsx3
+from gtts import gTTS
 
 import discord
 from discord.ext import commands
@@ -47,7 +47,6 @@ class Voice(commands.Cog):
 
         self.message_ttl_delta = datetime.timedelta(minutes=5)
 
-        self.tts_engine = pyttsx3.init()
         self.lock = dict()
 
         for guild_id in Database.Main:
@@ -93,7 +92,6 @@ class Voice(commands.Cog):
         Send a text to speech message in the voice channel associated with the text channel.
         """
 
-        tts_engine = pyttsx3.init("espeak", True)
         voice_channel = self.get_voice_channel_by_name(
             ctx.guild, ctx.message.channel.name
         )
@@ -113,51 +111,39 @@ class Voice(commands.Cog):
             await ctx.message.add_reaction("🚫")
             return
 
-        remove_reaction = False
-
-        if self.lock[ctx.guild.id]:
-            await ctx.message.add_reaction("⏳")
-            remove_reaction = True
+        # Add a reaction to signify we are working.
+        await ctx.message.add_reaction("⏳")
 
         async with self.lock[ctx.guild.id]:
-            # Remove wait emoji
-            if remove_reaction:
-                await ctx.message.remove_reaction("⏳", ctx.guild.me)
+
+            # If the message is over 200 messages, tell the user no.
+            if len(message) > 200:
+                message = (
+                    message[:200]
+                    + f"........ you know what, I'm not reading all of this get a microphone {ctx.message.author.name}."
+                )
+
+            # Generate the audio file
+            audio = gTTS(f"{ctx.message.author.name} says {message}")
+            audio.save(f"/tmp/tts-{ctx.guild.id}.mp3")
 
             # Connect to the appropriate voice channel
             voice_client = await voice_channel.connect()
 
-            # Set the bot's voice
-            voices = tts_engine.getProperty("voices")
-            tts_engine.setProperty("voice", voices[1].id)
+            # Play the generated file
+            voice_client.play(discord.FFmpegPCMAudio(f"/tmp/tts-{ctx.guild.id}.mp3"))
 
-            # Set the bot's speed
-            tts_engine.setProperty("rate", 110)
-
-            # Set the bot's volume
-
-            if len(message) > 300:
-                message = (
-                    message[:300]
-                    + f"........ you know what, forget reading all this get a microphone {ctx.message.author.name}."
-                )
-
-            tts_engine.save_to_file(
-                f"{ctx.message.author.name} says {message}", "voice.wav"
-            )
-            tts_engine.runAndWait()
-
-            # Wait for the engine to finish.
-            while tts_engine.isBusy():
-                asyncio.sleep(0.1)
-
-            voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
-
+            # Wait while the voice is playing
             while voice_client.is_playing():
                 await asyncio.sleep(0.1)
 
+            # Disconnect from voice channel
             await voice_client.disconnect()
 
+            # Remove wait emoji
+            await ctx.message.remove_reaction("⏳", ctx.guild.me)
+
+            # Signal completion.
             await ctx.message.add_reaction("✔️")
 
     @commands.Cog.listener()
