@@ -93,7 +93,7 @@ class Voice(commands.Cog):
         Send a text to speech message in the voice channel associated with the text channel.
         """
 
-        tts_engine = pyttsx3.init('espeak',True)
+        tts_engine = pyttsx3.init("espeak", True)
         voice_channel = self.get_voice_channel_by_name(
             ctx.guild, ctx.message.channel.name
         )
@@ -146,16 +146,12 @@ class Voice(commands.Cog):
                 f"{ctx.message.author.name} says {message}", "voice.wav"
             )
             tts_engine.runAndWait()
-            #tts_engine.startLoop(True)
 
             # Wait for the engine to finish.
             while tts_engine.isBusy():
-                asyncio.sleep(.1)
-
+                asyncio.sleep(0.1)
 
             voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
-
-            #tts_engine.endLoop()
 
             while voice_client.is_playing():
                 await asyncio.sleep(0.1)
@@ -165,7 +161,12 @@ class Voice(commands.Cog):
             await ctx.message.add_reaction("✔️")
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
+    async def on_voice_state_update(
+        self,
+        member: discord.member,
+        before: discord.member.VoiceState,
+        after: discord.member.VoiceState,
+    ):
         """
         """
         # Guard Clause
@@ -266,8 +267,12 @@ class Voice(commands.Cog):
 
         if kick_from_lobby:
             # No message in memory OR the message is more than 5 minutes old
-            await self.kick_from_voice_channel(member)
-            return None
+            lobby = self.get_text_channel_by_name(member.guild, "Lobby")
+            if member in lobby.members:
+                await self.kick_from_voice_channel(member)
+                return None
+            else:
+                logger.info("User was not in the Lobby to be kicked. ¯\\_(ツ)_/¯")
 
         return last_message
 
@@ -284,10 +289,22 @@ class Voice(commands.Cog):
             return None
 
     async def kick_from_voice_channel(self, member: discord.Member):
-        await member.move_to(None, reason="Kicked by Bot")
+        try:
+            await member.move_to(None, reason="Kicked by Bot")
+
+        except discord.HTTPException as e:
+            if e.code == 50013:
+                # Missing Permissions error
+                logger.warning(
+                    f"Missing Permissions to move a user to another channel in {member.guild}"
+                )
+                return
 
     async def member_joined_lobby(
-        self, member: discord.Member, guild: discord.Guild, after
+        self,
+        member: discord.Member,
+        guild: discord.Guild,
+        after: discord.member.VoiceState,
     ):
         """
         Handles when a member joins the voice chat lobby
@@ -427,7 +444,7 @@ class Voice(commands.Cog):
 
 def setup(client):
     """
-	TempVoice setup
+	Voice setup
 	"""
     logger.info(f"Loading {__name__}...")
     client.add_cog(Voice(client))
