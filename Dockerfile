@@ -23,15 +23,11 @@ ENV PIP_NO_CACHE_DIR=false \
 
 
 
-# Pull bot from github if on master
-RUN if [ "{$branch}" = "master"]; then git clone https://github.com/tisboyo/Discord_Bot.git /root/Discord_Bot; fi
-
 # Create the working directory
-#RUN mkdir /workspaces
 WORKDIR /workspaces/Discord_Bot
 
-# Switch Branches
-# RUN git checkout ${branch}
+# Pull bot from github
+RUN wget https://raw.githubusercontent.com/tisboyo/Discord_Bot/dev/init.sh -O /workspaces/Discord_Bot/init.sh && chmod +x /workspaces/Discord_Bot/init.sh
 
 # Install needed libraries
 RUN apt-get update && apt-get install -y \
@@ -39,15 +35,9 @@ RUN apt-get update && apt-get install -y \
     libespeak1 \
     ffmpeg
 
-# Install nodemon
-# RUN npm install -g nodemon
-
 # Setup pipenv
 RUN pip install pipenv
 RUN pipenv install
-
-# Set init.sh to executable
-# RUN chmod +x /root/Discord_Bot/init.sh
 
 # Expose port for debugging
 EXPOSE 5678:5678
@@ -56,4 +46,4 @@ EXPOSE 5678:5678
 VOLUME /workspaces/Discord_Bot/db
 
 ENTRYPOINT ["/bin/sh"]
-CMD ["-c", "~/Discord_Bot/init.sh"]
+CMD ["-c", "/workspaces/Discord_Bot/init.sh"]
