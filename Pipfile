@@ -7,12 +7,14 @@ verify_ssl = true
 wheel = "*"
 pylint = "*"
 black = "*"
+ptvsd = "*"
 
 [packages]
 pipenv = "*"
 aioftp = "*"
 "discord.py" = {extras = ["voice"],version = "*"}
 pyttsx3 = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.6"

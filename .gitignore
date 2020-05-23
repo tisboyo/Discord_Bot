@@ -75,9 +75,8 @@ cogs/test.py
 *.sublime-workspace
 *.sublime-project
 
-#VSCode stuff
+# Python virtual environment
 .venv
-.vscode
 
 # Text To Speech temporary file
-voice.wav
+voice-*.wav
