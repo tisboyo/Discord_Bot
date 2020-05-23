@@ -275,7 +275,7 @@ class Levels(commands.Cog):
                     if Database.Cogs["karma"][ctx.guild.id]["settings"]["enabled"]:
                         embed.add_field(
                             name="Karma",
-                            value=f"Upvotes: {result[6]} Downvotes: {result[7]}",
+                            value=f"Upvotes: {result[6]} \r\nDownvotes: {result[7]}",
                         )
 
             await ctx.send(content=None, embed=embed)
