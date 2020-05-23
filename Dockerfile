@@ -1,5 +1,4 @@
 FROM python:3.6
-# FROM nikolaik/python-nodejs:python3.6-nodejs14
 
 # Set pip to have cleaner logs and no saved cache
 ENV PIP_NO_CACHE_DIR=false \
@@ -37,7 +36,6 @@ RUN apt-get update && apt-get install -y \
 
 # Setup pipenv
 RUN pip install pipenv
-RUN pipenv install
 
 # Expose port for debugging
 EXPOSE 5678:5678
