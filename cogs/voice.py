@@ -93,7 +93,7 @@ class Voice(commands.Cog):
         Send a text to speech message in the voice channel associated with the text channel.
         """
 
-        tts_engine = self.tts_engine
+        tts_engine = pyttsx3.init('espeak',True)
         voice_channel = self.get_voice_channel_by_name(
             ctx.guild, ctx.message.channel.name
         )
@@ -146,8 +146,16 @@ class Voice(commands.Cog):
                 f"{ctx.message.author.name} says {message}", "voice.wav"
             )
             tts_engine.runAndWait()
+            #tts_engine.startLoop(True)
+
+            # Wait for the engine to finish.
+            while tts_engine.isBusy():
+                asyncio.sleep(.1)
+
 
             voice_client.play(discord.FFmpegPCMAudio("voice.wav"))
+
+            #tts_engine.endLoop()
 
             while voice_client.is_playing():
                 await asyncio.sleep(0.1)
