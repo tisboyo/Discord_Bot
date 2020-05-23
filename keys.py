@@ -31,7 +31,7 @@ backup = dict(
     backup_path=os.getenv("backup_path"),
     # Host to upload to for ftp
     upload_server=os.getenv("backup_server"),
-    upload_port=int(os.getenv("backup_port")),
+    upload_port=os.getenv("backup_port"),
     # Full Path on ftp server, with trailing slash
     upload_path=os.getenv("backup_upload_path"),
     # FTP Username

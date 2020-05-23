@@ -8,6 +8,7 @@ import logging
 import asyncio
 import datetime
 from collections import namedtuple
+from gtts import gTTS
 
 import discord
 from discord.ext import commands
@@ -22,9 +23,9 @@ logger = logging.getLogger(__name__)
 # TODO Add announcement channel setting to keep a track of bot changes
 
 
-class TempVoice(commands.Cog):
+class Voice(commands.Cog):
     """
-    Temporary Voice Channels
+    Voice Channels
 
     The bot will monitor text channels that it can see,
     when you join the Lobby voice channel it will create a
@@ -46,8 +47,11 @@ class TempVoice(commands.Cog):
 
         self.message_ttl_delta = datetime.timedelta(minutes=5)
 
-        for guild in client.guilds:
-            Database.Cogs[self.name][guild.id] = dict()
+        self.lock = dict()
+
+        for guild_id in Database.Main:
+            # Database.Cogs[self.name][guild.id] = dict()
+            self.lock[guild_id] = asyncio.Lock()
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -81,8 +85,74 @@ class TempVoice(commands.Cog):
             channel=message.channel, time=datetime.datetime.now()
         )
 
+    @commands.command()
+    @Permissions.check(role="everyone")
+    async def tts(self, ctx, *, message):
+        """
+        Send a text to speech message in the voice channel associated with the text channel.
+        """
+
+        voice_channel = self.get_voice_channel_by_name(
+            ctx.guild, ctx.message.channel.name
+        )
+
+        if (
+            # Unable to find a voice channel with the name of the current text channel
+            voice_channel == None
+            # Author is not in voice at all
+            or ctx.message.author.voice == None
+            # Author is not in the right voice channel
+            or ctx.message.author.voice.channel != voice_channel
+        ):
+
+            await ctx.send(
+                f"Sorry, you have to be in voice channel with the name `{ctx.message.channel.name}`"
+            )
+            await ctx.message.add_reaction("🚫")
+            return
+
+        # Add a reaction to signify we are working.
+        await ctx.message.add_reaction("⏳")
+
+        async with self.lock[ctx.guild.id]:
+
+            # If the message is over 200 messages, tell the user no.
+            if len(message) > 200:
+                message = (
+                    message[:200]
+                    + f"........ you know what, I'm not reading all of this get a microphone {ctx.message.author.name}."
+                )
+
+            # Generate the audio file
+            audio = gTTS(f"{ctx.message.author.name} says {message}")
+            audio.save(f"/tmp/tts-{ctx.guild.id}.mp3")
+
+            # Connect to the appropriate voice channel
+            voice_client = await voice_channel.connect()
+
+            # Play the generated file
+            voice_client.play(discord.FFmpegPCMAudio(f"/tmp/tts-{ctx.guild.id}.mp3"))
+
+            # Wait while the voice is playing
+            while voice_client.is_playing():
+                await asyncio.sleep(0.1)
+
+            # Disconnect from voice channel
+            await voice_client.disconnect()
+
+            # Remove wait emoji
+            await ctx.message.remove_reaction("⏳", ctx.guild.me)
+
+            # Signal completion.
+            await ctx.message.add_reaction("✔️")
+
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
+    async def on_voice_state_update(
+        self,
+        member: discord.member,
+        before: discord.member.VoiceState,
+        after: discord.member.VoiceState,
+    ):
         """
         """
         # Guard Clause
@@ -183,8 +253,12 @@ class TempVoice(commands.Cog):
 
         if kick_from_lobby:
             # No message in memory OR the message is more than 5 minutes old
-            await self.kick_from_voice_channel(member)
-            return None
+            lobby = self.get_text_channel_by_name(member.guild, "Lobby")
+            if member in lobby.members:
+                await self.kick_from_voice_channel(member)
+                return None
+            else:
+                logger.info("User was not in the Lobby to be kicked. ¯\\_(ツ)_/¯")
 
         return last_message
 
@@ -201,10 +275,22 @@ class TempVoice(commands.Cog):
             return None
 
     async def kick_from_voice_channel(self, member: discord.Member):
-        await member.move_to(None, reason="Kicked by Bot")
+        try:
+            await member.move_to(None, reason="Kicked by Bot")
+
+        except discord.HTTPException as e:
+            if e.code == 50013:
+                # Missing Permissions error
+                logger.warning(
+                    f"Missing Permissions to move a user to another channel in {member.guild}"
+                )
+                return
 
     async def member_joined_lobby(
-        self, member: discord.Member, guild: discord.Guild, after
+        self,
+        member: discord.Member,
+        guild: discord.Guild,
+        after: discord.member.VoiceState,
     ):
         """
         Handles when a member joins the voice chat lobby
@@ -242,9 +328,18 @@ class TempVoice(commands.Cog):
 
         if channel is None:  # Create it
             # TODO Add reason for creation
-            channel = await guild.create_voice_channel(
-                last_message.channel.name, category=category, overwrites=overwrites
-            )
+            try:
+                channel = await guild.create_voice_channel(
+                    last_message.channel.name, category=category, overwrites=overwrites
+                )
+            except discord.HTTPException as e:
+                if e.code == 50013:
+                    logger.warning(
+                        f"Missing Permissions to create voice channel in {guild}."
+                    )
+
+                    # TODO DM Server Owner for permissions.
+                return
 
         # Checking to make sure the channel actually exists, in case of a creation error
         if channel is not None:
@@ -328,14 +423,15 @@ class TempVoice(commands.Cog):
         return None
 
     # @Template.error
+
     async def _error(self, ctx, error):
         await Utils.errors(self, ctx, error)
 
 
 def setup(client):
     """
-	TempVoice setup
+	Voice setup
 	"""
     logger.info(f"Loading {__name__}...")
-    client.add_cog(TempVoice(client))
+    client.add_cog(Voice(client))
     logger.info(f"Loaded {__name__}")

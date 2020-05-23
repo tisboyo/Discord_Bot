@@ -27,6 +27,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+try:
+    # Debugger
+    import ptvsd
+
+    ptvsd.enable_attach(address=("0.0.0.0", 5678))
+    logger.warning("Waiting for VSCode Debugger Attach")
+    ptvsd.wait_for_attach()
+except:
+    pass
+
 # Get the bot Token
 Token = keys.discord["token"]
 
