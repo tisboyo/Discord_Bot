@@ -116,15 +116,26 @@ class Voice(commands.Cog):
 
         async with self.lock[ctx.guild.id]:
 
+            # Scrub the message of undesirable text
+            clean_message = ""
+            for word in message.split():
+                if word[0] == word[-1] == ":":  # Most likely an emoji
+                    pass
+                elif word.startswith("http") or word.startswith("www"):  # No links
+                    pass
+
+                else:
+                    clean_message += f"{word} "
+
             # If the message is over 200 messages, tell the user no.
-            if len(message) > 200:
-                message = (
-                    message[:200]
+            if len(clean_message) > 200:
+                clean_message = (
+                    clean_message[:200]
                     + f"........ you know what, I'm not reading all of this get a microphone {ctx.message.author.name}."
                 )
 
             # Generate the audio file
-            audio = gTTS(f"{ctx.message.author.name} says {message}")
+            audio = gTTS(f"{ctx.message.author.name} says {clean_message}")
             audio.save(f"/tmp/tts-{ctx.guild.id}.mp3")
 
             # Connect to the appropriate voice channel
