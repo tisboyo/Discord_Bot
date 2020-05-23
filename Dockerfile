@@ -44,4 +44,4 @@ EXPOSE 5678:5678
 VOLUME /workspaces/Discord_Bot/db
 
 ENTRYPOINT ["/bin/sh"]
-CMD ["-c", "/workspaces/Discord_Bot/init.sh"]
+CMD ["-c", "chmod +x /workspaces/Discord_Bot/init.sh && /workspaces/Discord_Bot/init.sh"]
