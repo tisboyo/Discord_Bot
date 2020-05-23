@@ -15,6 +15,7 @@ aioftp = "*"
 "discord.py" = {extras = ["voice"],version = "*"}
 pyttsx3 = "*"
 python-dotenv = "*"
+gtts = "*"
 
 [requires]
 python_version = "3.6"
