@@ -10,5 +10,7 @@ git fetch --all
 git reset --hard origin/$branch
 git checkout $branch
 
+chmod +x init.sh
+
 pipenv install
 pipenv run python main.py
