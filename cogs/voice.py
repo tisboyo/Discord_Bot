@@ -151,28 +151,23 @@ class Voice(commands.Cog):
             # Play the generated file
             try:
                 voice_client.play(discord.FFmpegPCMAudio(file_path))
-            except discord.ClientException as e:
-                # Send error to console, remove wait reaction
-                # Add Error reaction, disconnect from voice.
-                logger.warning(e)
-                await ctx.message.remove_reaction("⏳", ctx.guild.me)
-                await ctx.message.add_reaction("🚫")
-                # Disconnect from voice channel
-                await voice_client.disconnect()
-                return
 
-            # Wait while the voice is playing
-            while voice_client.is_playing():
-                await asyncio.sleep(0.1)
+                # Wait while the voice is playing
+                while voice_client.is_playing():
+                    await asyncio.sleep(0.1)
+
+                # Signal completion.
+                await ctx.message.add_reaction("✔️")
+
+            except discord.ClientException as e:
+                # Send error to console
+                logger.warning(e)
 
             # Disconnect from voice channel
             await voice_client.disconnect()
 
             # Remove wait emoji
             await ctx.message.remove_reaction("⏳", ctx.guild.me)
-
-            # Signal completion.
-            await ctx.message.add_reaction("✔️")
 
     @commands.Cog.listener()
     async def on_voice_state_update(
