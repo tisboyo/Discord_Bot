@@ -9,6 +9,9 @@ import asyncio
 import datetime
 from collections import namedtuple
 from gtts import gTTS
+from tempfile import gettempdir
+import os
+
 
 import discord
 from discord.ext import commands
@@ -48,6 +51,7 @@ class Voice(commands.Cog):
         self.message_ttl_delta = datetime.timedelta(minutes=5)
 
         self.lock = dict()
+        self.tempdir = gettempdir()
 
         for guild_id in Database.Main:
             # Database.Cogs[self.name][guild.id] = dict()
@@ -134,15 +138,28 @@ class Voice(commands.Cog):
                     + f"........ you know what, I'm not reading all of this get a microphone {ctx.message.author.name}."
                 )
 
+            # Set a file path
+            file_path = os.path.join(self.tempdir, f"tts-{ctx.guild.id}.mp3")
+
             # Generate the audio file
             audio = gTTS(f"{ctx.message.author.name} says {clean_message}")
-            audio.save(f"/tmp/tts-{ctx.guild.id}.mp3")
+            audio.save(file_path)
 
             # Connect to the appropriate voice channel
             voice_client = await voice_channel.connect()
 
             # Play the generated file
-            voice_client.play(discord.FFmpegPCMAudio(f"/tmp/tts-{ctx.guild.id}.mp3"))
+            try:
+                voice_client.play(discord.FFmpegPCMAudio(file_path))
+            except discord.ClientException as e:
+                # Send error to console, remove wait reaction
+                # Add Error reaction, disconnect from voice.
+                logger.warning(e)
+                await ctx.message.remove_reaction("⏳", ctx.guild.me)
+                await ctx.message.add_reaction("🚫")
+                # Disconnect from voice channel
+                await voice_client.disconnect()
+                return
 
             # Wait while the voice is playing
             while voice_client.is_playing():
@@ -434,7 +451,6 @@ class Voice(commands.Cog):
         return None
 
     # @Template.error
-
     async def _error(self, ctx, error):
         await Utils.errors(self, ctx, error)
 
