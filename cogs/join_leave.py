@@ -529,7 +529,7 @@ class JoinLeave(commands.Cog):
                 self, cursor, member.guild.id, query, values
             )
 
-            if query_result[0] is not None:
+            if query_result is not None:
                 # Use a space between names as it is not a valid trailing character
                 # Split the query into a list of names previously used
                 nickname_history = json.loads(query_result[0])
