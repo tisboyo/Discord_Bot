@@ -160,6 +160,11 @@ class FunStuff(commands.Cog):
         elif msg in ["🙀", "😱"]:  # :scream_cat: or :scream:
             await message.channel.send(file=discord.File("images/peachcatboo.gif"))
 
+        elif msg == "427578603207917580 no":
+            await message.channel.send(
+                "NO <@!427578603207917580>! https://tenor.com/view/jermichael-no-urn-spray-bottle-spray-gif-13258723"
+            )
+
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
