@@ -492,7 +492,8 @@ class JoinLeave(commands.Cog):
         # Check to make sure the bot has read and send messages permissions
         if await self.channel_permissions_check(member, notificationChannel, True):
             output = "A user has left the server."
-            await notificationChannel.send(output, embed=self.build_embed(member))
+            embed_to_send = self.build_embed(member)
+            await notificationChannel.send(output, embed=embed_to_send)
 
     def build_embed(self, member):
 
@@ -530,14 +531,17 @@ class JoinLeave(commands.Cog):
             )
 
             if query_result is not None:
-                # Use a space between names as it is not a valid trailing character
-                # Split the query into a list of names previously used
-                nickname_history = json.loads(query_result[0])
+                if query_result[0] is not None:
+                    # Use a space between names as it is not a valid trailing character
+                    # Split the query into a list of names previously used
+                    nickname_history = json.loads(query_result[0])
 
-                # Build the list
-                nickname_history = ", ".join(nickname_history)
+                    # Build the list
+                    nickname_history = ", ".join(nickname_history)
 
-                embed.add_field(name="Previous Nicknames", value=f"{nickname_history}")
+                    embed.add_field(
+                        name="Previous Nicknames", value=f"{nickname_history}"
+                    )
 
         return embed
 
