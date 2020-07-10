@@ -165,6 +165,9 @@ class FunStuff(commands.Cog):
                 "NO <@!427578603207917580>! https://tenor.com/view/jermichael-no-urn-spray-bottle-spray-gif-13258723"
             )
 
+        elif ":facedesk:" in message.content.lower():
+            await message.channel.send("https://tenor.com/yWTN.gif")
+
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
