@@ -73,6 +73,15 @@ class Utils(commands.Cog):
 
     async def errors(self, ctx, error):
 
+        logger.info(
+            "\r\n"
+            f"----- Guild: {ctx.guild.name}-{ctx.guild.id}\r\n"
+            f"----- Channel: #{ctx.channel.name}-{ctx.channel.id}\r\n"
+            f"----- Author: {ctx.author.display_name}-{ctx.author.id}\r\n"
+            f"----- Message: {ctx.message.content}\r\n"
+            f"{error}"
+        )
+
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Missing required arguments")
             await ctx.send_help(ctx.command)
@@ -88,12 +97,16 @@ class Utils(commands.Cog):
             await ctx.message.add_reaction("🚫")
             return
 
+        elif isinstance(error, discord.errors.Forbidden):
+            await ctx.message.add_reaction("🚫")
+            return
+
         elif isinstance(error, commands.CommandError):
             # This must be the last error checked because all other errors are sub errors of CommandError
             messages = {
                 "MissingPermissions": f"You do not have permissions to use that command.",
                 "NotAvailableInThisGuild": "This command is guild specific in the bot, and is unavailable here.",
-                "BotIsSleeping": "Bot is currently unavaialble for commands.",
+                "BotIsSleeping": "Bot is currently unavailable for commands.",
             }
 
             if str(error) in messages:
