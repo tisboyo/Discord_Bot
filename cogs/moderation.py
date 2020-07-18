@@ -337,13 +337,13 @@ class Moderation(commands.Cog):
             await channel.send("", embed=embed)
 
     @mod.command(hidden=True)
-    @commands.is_owner()
+    @Permissions.check()
     async def delete_message(self, ctx, message_id: int):
         """
         Deletes a message by id.
         """
 
-        message = await ctx.channel.fetch_message(message_id)
+        message = await ctx.fetch_message(message_id)
         await message.delete()
 
     @delete_message.error
