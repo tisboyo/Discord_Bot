@@ -106,9 +106,9 @@ class FunStuff(commands.Cog):
 
         elif "thats what she said" in msg:
             phrases = [
-                "Not to you they don't.",
                 "https://tenor.com/rRGv.gif",
                 "https://tenor.com/sHBT.gif",
+                "Not to you they don't.",
             ]
             rand_phrase = random.choice(phrases)
             await message.channel.send(rand_phrase)
