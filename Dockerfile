@@ -26,7 +26,7 @@ ENV PIP_NO_CACHE_DIR=false \
 WORKDIR /workspaces/Discord_Bot
 
 # Pull bot from github
-RUN wget https://raw.githubusercontent.com/tisboyo/Discord_Bot/dev/init.sh -O /workspaces/Discord_Bot/init.sh && chmod +x /workspaces/Discord_Bot/init.sh
+RUN wget https://raw.githubusercontent.com/tisboyo/Discord_Bot/$branch/init.sh -O /workspaces/Discord_Bot/init.sh && chmod +x /workspaces/Discord_Bot/init.sh
 
 # Install needed libraries
 RUN apt-get update && apt-get install -y \
