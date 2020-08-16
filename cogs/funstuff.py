@@ -54,7 +54,8 @@ class FunStuff(commands.Cog):
             return
 
         # Strip punctuation, and force to lower case
-        msg = re.sub("[" + string.punctuation + "]", "", message.content.lower())
+        msg_no_lower: str = re.sub("[" + string.punctuation + "]", "", message.content)
+        msg: str = msg_no_lower.lower()
 
         # Establish a wait time between sending the same message
         wait_time = datetime.timedelta(minutes=5)
@@ -174,11 +175,21 @@ class FunStuff(commands.Cog):
             await message.channel.send("https://tenor.com/yWTN.gif")
 
         elif (
-            (message.content.upper() == message.content)
+            (msg.upper() == msg_no_lower)
             and (not message.author.bot)
-            and (message.content[0] != ":" and message.content[-1] != ":")  # Emoji
+            and (len(msg) > 4)
+            and (not msg.isnumeric())
         ):
-            await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
+            if (
+                self.last_run.get("yelling", datetime.datetime.min) + wait_time
+                <= datetime.datetime.now()
+            ):
+                await message.channel.send(
+                    f"WHY ARE WE YELLING {message.author.mention}?"
+                )
+                self.last_run["yelling"] = datetime.datetime.now()
+            else:
+                await message.add_reaction("⏳")
 
     @commands.group(hidden=True)
     @Permissions.check()
