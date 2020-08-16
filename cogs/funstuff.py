@@ -173,7 +173,11 @@ class FunStuff(commands.Cog):
         elif ":facedesk:" in message.content.lower():
             await message.channel.send("https://tenor.com/yWTN.gif")
 
-        elif (message.content.upper() == message.content) and not message.author.bot:
+        elif (
+            (message.content.upper() == message.content)
+            and (not message.author.bot)
+            and (message.content[0] != ":" and message.content[-1] != ":")  # Emoji
+        ):
             await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
 
     @commands.group(hidden=True)
