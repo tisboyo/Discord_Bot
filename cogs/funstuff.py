@@ -173,6 +173,9 @@ class FunStuff(commands.Cog):
         elif ":facedesk:" in message.content.lower():
             await message.channel.send("https://tenor.com/yWTN.gif")
 
+        elif (message.content.upper() == message.content) and not message.author.bot:
+            await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
+
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
