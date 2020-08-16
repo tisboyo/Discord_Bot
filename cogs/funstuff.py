@@ -184,10 +184,13 @@ class FunStuff(commands.Cog):
                 self.last_run.get("yelling", datetime.datetime.min) + wait_time
                 <= datetime.datetime.now()
             ):
-                await message.channel.send(
+                msg = await message.channel.send(
                     f"WHY ARE WE YELLING {message.author.mention}?"
                 )
                 self.last_run["yelling"] = datetime.datetime.now()
+                await asyncio.sleep(15)
+                await msg.delete()
+
             else:
                 await message.add_reaction("⏳")
 
