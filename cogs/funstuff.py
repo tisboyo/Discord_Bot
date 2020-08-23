@@ -251,6 +251,22 @@ class FunStuff(commands.Cog):
     async def honk(self, ctx):
         await ctx.channel.send(file=discord.File("images/honque.jpg"))
 
+    @commands.command()
+    @Permissions.check(role="everyone")
+    async def bubblewrap(self, ctx):
+        pop = "||pop||" * 100
+        embed = discord.Embed(title="")
+        embed.add_field(name=":popcorn:", value=pop)
+        await ctx.channel.send(embed=embed)
+
+    @commands.command()
+    @Permissions.check(role="everyone")
+    async def popcorn(self, ctx):
+        pop = "||🍿||" * 100
+        embed = discord.Embed(title="")
+        embed.add_field(name=":popcorn:", value=pop)
+        await ctx.channel.send(embed=embed)
+
     @permissionscheck.error
     @mathishard.error
     @babintdrinkstoomuch.error
