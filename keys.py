@@ -6,6 +6,10 @@ Discord Bot for HardwareFlare and others
 
 import logging
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 
 # Logging level
@@ -39,3 +43,12 @@ backup = dict(
     # FTP Password
     passwd=os.getenv("backup_ftp_passwd"),
 )
+
+# Twitch Keys
+twitch = dict(
+    # Client ID
+    client_id=os.getenv("twitch_clientid"),
+    # OAuth Key
+    key=os.getenv("twitch_key"),
+)
+

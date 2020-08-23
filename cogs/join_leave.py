@@ -59,7 +59,7 @@ class JoinLeave(commands.Cog):
 
         await ctx.send_help(ctx.command)
 
-    @commands.command(hidden=True)
+    @commands.command()
     @commands.guild_only()
     @Permissions.check(role="everyone")
     async def userinfo(self, ctx):
