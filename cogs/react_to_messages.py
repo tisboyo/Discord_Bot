@@ -430,7 +430,7 @@ class ReactToMessages(commands.Cog):
         else:
 
             output = f"{mentionedUser.display_name} has the following reactions randomly added to their messages: "
-            for each in handle[mentionedUser]["emojis"]:
+            for each in handle[mentionedUser.id]["emojis"]:
                 output += each
 
             await ctx.send(output)
