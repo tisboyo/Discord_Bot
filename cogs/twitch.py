@@ -266,7 +266,7 @@ class Twitch(commands.Cog):
         Twitch.profile_update = datetime.now()
 
 
-async def get_twitch_status(client):
+async def get_twitch_status():
     """
     This is the actual loop that will post to the channels
     """
@@ -280,6 +280,7 @@ async def get_twitch_status(client):
 
     while not Twitch.ready:
         # Sleep until on_ready fires
+        logger.info("Waiting for on_ready")
         await asyncio.sleep(1)
 
     while True:
@@ -331,7 +332,10 @@ async def get_twitch_status(client):
                         )
                         Twitch.streamers[user_name]["started_at"] = started_at
 
-        await asyncio.sleep(300)  # 300 = 5 Minutes
+        for x in range(60):
+            logger.info(f"get_twitch_status sleeping {x} of 60")
+            await asyncio.sleep(5)  # 300 = 5 Minutes
+        logger.warning("get_twitch_status I'M AWAKE!!")
 
 
 def setup(client):
@@ -340,5 +344,5 @@ def setup(client):
 	"""
     logger.info(f"Loading {__name__}...")
     client.add_cog(Twitch(client))
-    client.loop.create_task(get_twitch_status(client))
+    client.loop.create_task(get_twitch_status())
     logger.info(f"Loaded {__name__}")
