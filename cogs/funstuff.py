@@ -192,13 +192,18 @@ class FunStuff(commands.Cog):
                 await msg.delete()
 
             else:
+                await message.add_reaction("👎")
                 await message.add_reaction("⏳")
-                await message.add_reaction(":thumbsdown:")
+                await asyncio.sleep(5)
+                await message.remove_reaction("⏳", self.client.user)
 
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            pass
 
         await ctx.message.channel.send(f"I'm watching you {member.mention}. 🗡️⚔️")
 
