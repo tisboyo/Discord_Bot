@@ -192,13 +192,18 @@ class FunStuff(commands.Cog):
                 await msg.delete()
 
             else:
+                await message.add_reaction("👎")
                 await message.add_reaction("⏳")
-                await message.add_reaction(":thumbsdown:")
+                await asyncio.sleep(5)
+                await message.remove_reaction("⏳", self.client.user)
 
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            pass
 
         await ctx.message.channel.send(f"I'm watching you {member.mention}. 🗡️⚔️")
 
@@ -248,6 +253,18 @@ class FunStuff(commands.Cog):
             await asyncio.sleep(1)
 
     @commands.command(hidden=True)
+    @Permissions.check()
+    async def superannoy(self, ctx, count: int, *, message):
+        count = abs(count)
+        if count > 15:
+            count = 15
+
+        for _ in range(count):
+            m = await ctx.send(message)
+            await asyncio.sleep(1)
+            await m.delete()
+
+    @commands.command(hidden=True)
     @Permissions.check(role="everyone")
     async def honk(self, ctx):
         await ctx.channel.send(file=discord.File("images/honque.jpg"))
@@ -273,6 +290,7 @@ class FunStuff(commands.Cog):
     @babintdrinkstoomuch.error
     @shrug.error
     @annoy.error
+    @superannoy.error
     @fight.error
     @honk.error
     async def _error(self, ctx, error):
