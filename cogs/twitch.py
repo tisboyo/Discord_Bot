@@ -331,6 +331,10 @@ async def get_twitch_status():
                             embed=embed,
                         )
                         Twitch.streamers[user_name]["started_at"] = started_at
+                elif Twitch.streamers[user_name].get("started_at", None) == started_at:
+                    logger.debug(
+                        f"{streamers[user_name]} is live but already announced."
+                    )
 
         for x in range(60):
             logger.info(f"get_twitch_status sleeping {x} of 60")
