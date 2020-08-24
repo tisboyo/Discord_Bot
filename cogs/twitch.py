@@ -46,20 +46,21 @@ class Twitch(commands.Cog):
             if settings:
                 streamers = json.loads(settings)
 
-            for streamer, channel in streamers.items():
-                if not Twitch.streamers.get(streamer, False):
-                    Twitch.streamers[streamer] = dict()
-                    Twitch.streamers[streamer]["started_at"] = None
-                    Twitch.streamers[streamer]["channels"] = set()
+                for streamer, channel in streamers.items():
+                    if not Twitch.streamers.get(streamer, False):
+                        Twitch.streamers[streamer] = dict()
+                        Twitch.streamers[streamer]["started_at"] = None
+                        Twitch.streamers[streamer]["channels"] = set()
 
-                # Get a discord.TextChannel object
-                channel = self.client.get_channel(channel)
+                    # Get a discord.TextChannel object
+                    # Considered adding a delay, but this isn't an API call so it shouldn't matter
+                    channel = self.client.get_channel(channel)
 
-                # Add to the global streamers notification
-                Twitch.streamers[streamer]["channels"].add(channel)
+                    # Add to the global streamers notification
+                    Twitch.streamers[streamer]["channels"].add(channel)
 
-                # Add to the guild list of streamers
-                Database.Cogs[self.name][guild_id]["streamers"][streamer] = channel
+                    # Add to the guild list of streamers
+                    Database.Cogs[self.name][guild_id]["streamers"][streamer] = channel
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -155,6 +156,14 @@ class Twitch(commands.Cog):
 
         await ctx.message.add_reaction(Dictionary.check_box)
 
+    @twitch.command()
+    @Permissions.check()
+    async def owner(self, ctx, streamer: str, owner: discord.Member):
+        """
+        Associates a discord member as owner of a twitch channel
+        """
+        pass
+
     @add.error
     @remove.error
     async def _error(self, ctx, error):
@@ -162,6 +171,9 @@ class Twitch(commands.Cog):
 
 
 async def get_twitch_status():
+    """
+    This is the actual loop that will post to the channels
+    """
 
     # Check to make sure a client_id is set, otherwise return
     if not Twitch.client_id:
@@ -202,6 +214,6 @@ def setup(client):
 	Twitch setup
 	"""
     logger.info(f"Loading {__name__}...")
-    client.add_cog(Twitch(client))
-    client.loop.create_task(get_twitch_status())
+    # client.add_cog(Twitch(client))
+    # client.loop.create_task(get_twitch_status())
     logger.info(f"Loaded {__name__}")
