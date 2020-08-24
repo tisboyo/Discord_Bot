@@ -188,11 +188,12 @@ class FunStuff(commands.Cog):
                     f"WHY ARE WE YELLING {message.author.mention}?"
                 )
                 self.last_run["yelling"] = datetime.datetime.now()
-                await asyncio.sleep(15)
+                await asyncio.sleep(8)
                 await msg.delete()
 
             else:
                 await message.add_reaction("⏳")
+                await message.add_reaction(":thumbsdown:")
 
     @commands.group(hidden=True)
     @Permissions.check()
@@ -254,9 +255,9 @@ class FunStuff(commands.Cog):
     @commands.command()
     @Permissions.check(role="everyone")
     async def bubblewrap(self, ctx):
-        pop = "||pop||" * 100
+        pop = "||*pop*||" * 100
         embed = discord.Embed(title="")
-        embed.add_field(name=":popcorn:", value=pop)
+        embed.add_field(name="pop....", value=pop)
         await ctx.channel.send(embed=embed)
 
     @commands.command()
