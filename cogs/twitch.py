@@ -36,6 +36,7 @@ class Twitch(commands.Cog):
     view_count = dict()
     profile_update = datetime.max
     ready = False
+    next_live_query = datetime.min
 
     def __init__(self, client):
         self.client = client
@@ -206,6 +207,7 @@ class Twitch(commands.Cog):
         for streamer, channel in db.items():
             embed.add_field(name=f"{streamer}", value=f"<#{channel}>")
 
+        embed.set_footer(text=f"Next Twitch query at: {Twitch.next_live_query}")
         await ctx.send(embed=embed)
 
     @twitch.command()
@@ -341,6 +343,9 @@ async def get_twitch_status():
                     )
 
             logger.debug("Twitch statuses retrieved")
+
+        # Save what time the next run will be, used in the list command
+        Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=300)
 
         await asyncio.sleep(300)  # 300 = 5 Minutes
 
