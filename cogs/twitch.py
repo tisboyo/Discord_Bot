@@ -191,6 +191,9 @@ class Twitch(commands.Cog):
     @twitch.command(name="list")
     @Permissions.check()
     async def twitch_list(self, ctx, streamer: str = None):
+        """
+        Lists the Twitch channels and Discord channels they post in.
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
