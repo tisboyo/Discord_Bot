@@ -13,7 +13,7 @@ load_dotenv()
 
 
 # Logging level
-logging_level = logging.INFO
+logging_level = logging.INFO if not os.getenv("DEBUG") else logging.DEBUG
 
 # Authentication Keys
 # Discord API Key
