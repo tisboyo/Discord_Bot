@@ -140,6 +140,9 @@ class Twitch(commands.Cog):
         streamers = Database.Cogs[self.name][ctx.guild.id]["streamers"]
         streamers[streamer] = discord_channel.id
 
+        # Reset the time check for downloading profiles pictures to force query with new channels
+        Twitch.profile_update = datetime.max
+
         await self.save_to_database(streamers, ctx.guild)
 
         await ctx.message.add_reaction(Dictionary.check_box)
