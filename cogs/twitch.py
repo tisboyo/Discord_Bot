@@ -284,6 +284,7 @@ async def get_twitch_status():
         await asyncio.sleep(1)
 
     while True:
+        logger.debug("Starting Twitch status retrieval")
         streams_params = {"user_login": list(Twitch.streamers.keys())}
 
         # If there aren't any streamers in the list, don't do any queries
@@ -336,10 +337,9 @@ async def get_twitch_status():
                         f"{streamers[user_name]} is live but already announced."
                     )
 
-        for x in range(60):
-            logger.info(f"get_twitch_status sleeping {x} of 60")
-            await asyncio.sleep(5)  # 300 = 5 Minutes
-        logger.warning("get_twitch_status I'M AWAKE!!")
+            logger.debug("Twitch statuses retrieved")
+
+        await asyncio.sleep(300)  # 300 = 5 Minutes
 
 
 def setup(client):
