@@ -188,9 +188,12 @@ class Twitch(commands.Cog):
         else:
             await ctx.message.add_reaction(Dictionary.red_no_circle)
 
-    @twitch.command(aliases=["list"])
+    @twitch.command(name="list")
     @Permissions.check()
     async def twitch_list(self, ctx, streamer: str = None):
+        """
+        Lists the Twitch channels and Discord channels they post in.
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
