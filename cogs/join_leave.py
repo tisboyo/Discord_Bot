@@ -540,7 +540,7 @@ class JoinLeave(commands.Cog):
                     nickname_history = ", ".join(nickname_history)
 
                     embed.add_field(
-                        name="Previous Nicknames", value=f"{nickname_history}"
+                        name="Previous Nicknames", value=f"{nickname_history} "
                     )
 
         return embed
