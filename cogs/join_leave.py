@@ -514,9 +514,9 @@ class JoinLeave(commands.Cog):
             name="Created Account",
             value=f"{member.created_at.strftime(time_format)} on {member.created_at.strftime(date_format)}",
         )
-        embed.add_field(name="Account Age", value=f"{self.build_account_age(member)} ")
+        embed.add_field(name="Account Age", value=f"{self.build_account_age(member)}")
         embed.add_field(
-            name="Member for", value=f"{self.build_server_member_for(member)} "
+            name="Member for", value=f"{self.build_server_member_for(member)}"
         )
         if (
             Database.Cogs.get("levels", False)
@@ -536,12 +536,14 @@ class JoinLeave(commands.Cog):
                     # Split the query into a list of names previously used
                     nickname_history = json.loads(query_result[0])
 
-                    # Build the list
-                    nickname_history = ", ".join(nickname_history)
+                    # Fix a bug that D3Jake created somehow mysteriously inserting a blank list
+                    if len(nickname_history) > 0:
+                        # Build the list
+                        nickname_history = ", ".join(nickname_history)
 
-                    embed.add_field(
-                        name="Previous Nicknames", value=f"{nickname_history} "
-                    )
+                        embed.add_field(
+                            name="Previous Nicknames", value=f"{nickname_history}"
+                        )
 
         return embed
 
