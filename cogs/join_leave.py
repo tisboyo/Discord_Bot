@@ -514,9 +514,9 @@ class JoinLeave(commands.Cog):
             name="Created Account",
             value=f"{member.created_at.strftime(time_format)} on {member.created_at.strftime(date_format)}",
         )
-        embed.add_field(name="Account Age", value=f"{self.build_account_age(member)}")
+        embed.add_field(name="Account Age", value=f"{self.build_account_age(member)} ")
         embed.add_field(
-            name="Member for", value=f"{self.build_server_member_for(member)}"
+            name="Member for", value=f"{self.build_server_member_for(member)} "
         )
         if (
             Database.Cogs.get("levels", False)
