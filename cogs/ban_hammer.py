@@ -23,7 +23,9 @@ class BanHammer(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        naughty_list = [486042866901188628, 581888665244925952]
+        naughty_list = [
+            486042866901188628,
+        ]
         if member.id in naughty_list:
             # Ban
             await member.guild.ban(member, reason="Auto-Ban for being on Naughty-List")
