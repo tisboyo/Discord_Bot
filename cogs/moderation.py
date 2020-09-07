@@ -296,7 +296,7 @@ class Moderation(commands.Cog):
             if payload.cached_message.author.id == self.client.user.id:  # bot.id
                 return
             # Ignore Chip (music bot)
-            elif payload.cached_message.author.id == "614109280508968980":
+            elif payload.cached_message.author.id == 614109280508968980:
                 return
 
         if payload.cached_message == None:  # Message was not in cache
