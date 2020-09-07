@@ -291,13 +291,12 @@ class Moderation(commands.Cog):
         channel = Utils.get_channel(self, guild, "delete_channel")
         message_channel = self.client.get_channel(payload.channel_id)
 
-        # Ignore #hydra_songrequests in HWF
-        if message_channel.id == 665746396040790039:
-            return
-
-        # Ignore our own messages.
-        elif payload.cached_message is not None:  # Check if message is cached
+        if payload.cached_message is not None:  # Check if message is cached
+            # Ignore our own messages.
             if payload.cached_message.author.id == self.client.user.id:  # bot.id
+                return
+            # Ignore Chip (music bot)
+            elif payload.cached_message.author.id == "614109280508968980":
                 return
 
         if payload.cached_message == None:  # Message was not in cache
