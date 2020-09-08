@@ -45,9 +45,7 @@ class ReactionRoles(commands.Cog):
         # Read the lists
         try:
             query = "SELECT emoji, role, description FROM reaction_roles_values"
-            result = Database.dbExecute(
-                self, cursor, guild_id, query, list(), True, hide_error=True
-            )
+            result = Database.dbExecute(self, cursor, guild_id, query, list(), True, hide_error=True)
             settingNum = 0
             for each_result in result:
                 handle["list"][each_result[0]] = [
@@ -94,10 +92,10 @@ class ReactionRoles(commands.Cog):
     @Permissions.check(permission=["manage_roles"])
     async def reacttorole(self, ctx):
         """
-		Base command, use help reacttorole for sub-commands
+        Base command, use help reacttorole for sub-commands
 
-		Default Permissions: manage_roles permission
-		"""
+        Default Permissions: manage_roles permission
+        """
 
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # A subcommand was used.
@@ -110,10 +108,10 @@ class ReactionRoles(commands.Cog):
     @Permissions.check(permission=["manage_channels"])
     async def channel(self, ctx, textchannel: discord.TextChannel, message=None):
         """
-		Sets a channel for the bot to post the messages to react to.
+        Sets a channel for the bot to post the messages to react to.
 
-		Default Permissions: manage_channels permission
-		"""
+        Default Permissions: manage_channels permission
+        """
 
         # Check for posting permissions, if not allowed notify owner/channel
         if (
@@ -125,9 +123,7 @@ class ReactionRoles(commands.Cog):
                 await ctx.send(f"I am unable to send messages in {textchannel.mention}")
             else:
                 serverOwner = ctx.message.guild.owner
-                await serverOwner.send(
-                    f"I am unable to send messages in {textchannel.mention} for React To Role"
-                )
+                await serverOwner.send(f"I am unable to send messages in {textchannel.mention} for React To Role")
 
             return
 
@@ -157,10 +153,10 @@ class ReactionRoles(commands.Cog):
     @Permissions.check(permission=["manage_roles"])
     async def create(self, ctx, role: discord.Role, emoji, *, message):
         """
-		create @role emoji Text string for message
+        create @role emoji Text string for message
 
-		Default Permissions: manage_roles permission
-		"""
+        Default Permissions: manage_roles permission
+        """
 
         # Get channel messages are sent to.
         channel = Utils.get_channel(self, ctx.guild, "role_channel")
@@ -178,9 +174,7 @@ class ReactionRoles(commands.Cog):
             Database.writeSettings(self, ctx.guild.id)
 
             # Notify server owner
-            await self.message_server_owner(
-                ctx.guild, 2048, "bad_channel_perms", channel.mention
-            )
+            await self.message_server_owner(ctx.guild, 2048, "bad_channel_perms", channel.mention)
 
             # Return Stop
             await Utils.send_failure(self, ctx.message)
@@ -201,15 +195,11 @@ class ReactionRoles(commands.Cog):
             try:
                 # We are responding with the emoji the user requested, primarily as a test
                 # to see if the emoji is valid. If it's not, it throws a HTTPException code 10014
-                await ctx.message.add_reaction(
-                    emoji
-                )  # Add the emoji the user requested.
+                await ctx.message.add_reaction(emoji)  # Add the emoji the user requested.
 
             except discord.HTTPException as e:
                 if e.code == 10014:
-                    await ctx.send(
-                        f"Sorry, but discord doesn't have that emoji in it's reaction library."
-                    )
+                    await ctx.send(f"Sorry, but discord doesn't have that emoji in it's reaction library.")
 
                     # Send failure to the user
                     await Utils.send_failure(self, ctx.message)
@@ -218,9 +208,7 @@ class ReactionRoles(commands.Cog):
                     return
 
                 elif e.code == 50013:
-                    await ctx.send(
-                        f"I'm sorry, but I'm not allowed to add reactions to messages."
-                    )
+                    await ctx.send(f"I'm sorry, but I'm not allowed to add reactions to messages.")
                     return
 
                 else:  # A different error code
@@ -258,15 +246,15 @@ class ReactionRoles(commands.Cog):
     @Permissions.check(permission=["manage_roles"])
     async def remove(self, ctx, role: discord.Role, emoji):
         """
-		Removes a role from the message the bot posted.
+        Removes a role from the message the bot posted.
 
-		Usage: remove @role emoji
+        Usage: remove @role emoji
 
-		Running this command does not remove the users from said roles,
-		Nor does it remove the role from the server.
+        Running this command does not remove the users from said roles,
+        Nor does it remove the role from the server.
 
-		Default Permissions: manage_roles permission
-		"""
+        Default Permissions: manage_roles permission
+        """
 
         try:  # Check if it is a custom emoji.
             emoji = await commands.EmojiConverter().convert(ctx, emoji)
@@ -315,9 +303,7 @@ class ReactionRoles(commands.Cog):
         # Check if message is set
         if Database.Cogs[self.name][guild.id]["settings"].get("message_id", False):
             # Load old message data
-            message_id = int(
-                Database.Cogs[self.name][guild.id]["settings"]["message_id"]
-            )
+            message_id = int(Database.Cogs[self.name][guild.id]["settings"]["message_id"])
 
             # Delete the old message
             try:
@@ -342,8 +328,8 @@ class ReactionRoles(commands.Cog):
 
     async def cleanup_deleted_message(self, guild_id):
         """
-		Cleans up the database when the role/reaction message is deleted.
-		"""
+        Cleans up the database when the role/reaction message is deleted.
+        """
 
         Database.Cogs[self.name][guild_id]["settings"]["message_id"] = None
 
@@ -354,14 +340,14 @@ class ReactionRoles(commands.Cog):
     @Permissions.check(permission=["manage_channels"])
     async def repost(self, ctx):
         """
-		Reposts the message to the channel. (Deletes old message)
+        Reposts the message to the channel. (Deletes old message)
 
-		This command is useful when the channel has been changed or the message deleted.
+        This command is useful when the channel has been changed or the message deleted.
 
-		This will delete all current reactions to the message.
+        This will delete all current reactions to the message.
 
-		Default Permissions: manage_channels permission
-		"""
+        Default Permissions: manage_channels permission
+        """
 
         channel = Utils.get_channel(self, ctx.guild, "role_channel")
 
@@ -382,8 +368,8 @@ class ReactionRoles(commands.Cog):
 
     async def build_message(self, ctx):
         """
-		Build and post the message to the appropriate channel
-		"""
+        Build and post the message to the appropriate channel
+        """
         # emoji, role, description
 
         # Send message permission check
@@ -404,27 +390,21 @@ class ReactionRoles(commands.Cog):
             name = f"{each} - {str(role)}"
             embed.add_field(name=name, value=f"{description}", inline=True)
 
-        embed.set_footer(
-            text="Select a reaction below to join the appropriate channel."
-        )
+        embed.set_footer(text="Select a reaction below to join the appropriate channel.")
 
         # Get channel
         channel = Utils.get_channel(self, ctx.guild, "role_channel")
 
         # Check if message exists, if so edit it
         if Database.Cogs[self.name][ctx.guild.id]["settings"]["message_id"]:
-            message_id = int(
-                Database.Cogs[self.name][ctx.guild.id]["settings"]["message_id"]
-            )
+            message_id = int(Database.Cogs[self.name][ctx.guild.id]["settings"]["message_id"])
             message = await channel.fetch_message(message_id)
             await message.edit(content=None, embed=embed)
 
         else:
             # Send to channel, and save it
             message = await channel.send(content=None, embed=embed)
-            Database.Cogs[self.name][ctx.guild.id]["settings"][
-                "message_id"
-            ] = message.id
+            Database.Cogs[self.name][ctx.guild.id]["settings"]["message_id"] = message.id
 
             Database.writeSettings(self, ctx.guild.id)
 
@@ -444,9 +424,7 @@ class ReactionRoles(commands.Cog):
             if str(eachReaction) not in entries.keys():
                 # Check to make sure the bot has manage_messages permission,
                 # If not, remove our own message and bail.
-                if not ctx.message.channel.permissions_for(
-                    ctx.guild.me
-                ).manage_messages:
+                if not ctx.message.channel.permissions_for(ctx.guild.me).manage_messages:
                     await message.remove_reaction(eachReaction, ctx.me)
                     await self.message_server_owner(ctx.guild, 8192, "remove_reaction")
                     continue
@@ -463,9 +441,9 @@ class ReactionRoles(commands.Cog):
     @commands.guild_only()
     async def on_raw_message_delete(self, payload):
         """
-		#Delete message event
-		#If the message is deleted manually, clean up the database
-		"""
+        #Delete message event
+        #If the message is deleted manually, clean up the database
+        """
 
         settings = Database.Cogs[self.name][payload.guild_id]["settings"]
 
@@ -495,8 +473,8 @@ class ReactionRoles(commands.Cog):
     @commands.guild_only()
     async def on_raw_reaction_add(self, payload):
         """
-		Adds a role to a user based on a reaction to a specified message.
-		"""
+        Adds a role to a user based on a reaction to a specified message.
+        """
         # Guard Clause is done inside on_raw_reaction_work
         role, member = await self.on_raw_reaction_work(payload)
         if role == None:  # Happens when Guard Clause is hit
@@ -511,8 +489,8 @@ class ReactionRoles(commands.Cog):
     @commands.guild_only()
     async def on_raw_reaction_remove(self, payload):
         """
-		Removes a role from a user based on a reaction to a specified message
-		"""
+        Removes a role from a user based on a reaction to a specified message
+        """
         # Guard Clause is done inside on_raw_reaction_work
 
         role, member = await self.on_raw_reaction_work(payload)
@@ -526,8 +504,8 @@ class ReactionRoles(commands.Cog):
 
     async def on_raw_reaction_work(self, payload):
         """
-		This function performs all of the actual work for both adding and removing a role
-		"""
+        This function performs all of the actual work for both adding and removing a role
+        """
         settings = Database.Cogs[self.name][payload.guild_id]["settings"]
 
         # Guard Clause
@@ -543,18 +521,12 @@ class ReactionRoles(commands.Cog):
             return None, None
 
         # Cooldown to prevent spamming API
-        last_run = Database.Cogs[self.name][payload.guild_id]["anti_spam"].get(
-            payload.user_id, 0
-        )
-        last_anti_spam_message = Database.Cogs[self.name][payload.guild_id][
-            "anti_spam_message"
-        ].get(payload.user_id, 0)
+        last_run = Database.Cogs[self.name][payload.guild_id]["anti_spam"].get(payload.user_id, 0)
+        last_anti_spam_message = Database.Cogs[self.name][payload.guild_id]["anti_spam_message"].get(payload.user_id, 0)
         current_time = time.time()
 
         # Update anti_spam
-        Database.Cogs[self.name][payload.guild_id]["anti_spam"][
-            payload.user_id
-        ] = current_time
+        Database.Cogs[self.name][payload.guild_id]["anti_spam"][payload.user_id] = current_time
 
         # One second delay to prevent rapid spamming by a user.
         # 5 Minute delay on warning the user to slow down.
@@ -564,9 +536,7 @@ class ReactionRoles(commands.Cog):
         # First time they have hit the limit in the last 5 minutes
         elif last_run + 1 > current_time:
             # Add anti_spam_message tracking
-            Database.Cogs[self.name][payload.guild_id]["anti_spam_message"][
-                payload.user_id
-            ] = current_time
+            Database.Cogs[self.name][payload.guild_id]["anti_spam_message"][payload.user_id] = current_time
 
             # Tell user to slow down
             member = self.client.get_user(payload.user_id)
@@ -626,27 +596,21 @@ class ReactionRoles(commands.Cog):
 
         await self.message_server_owner(guild, permissions, method)
 
-    async def message_server_owner(
-        self, guild, permissions: int, method, extra_data=None
-    ):
+    async def message_server_owner(self, guild, permissions: int, method, extra_data=None):
         """
-		Sends a message to the server owner asking for permissions.
+        Sends a message to the server owner asking for permissions.
 
-		guild = discord.Guild object
-		permissions = Value to be passed to discord.Permissions(permissions = ?)
-		method = The specific error message to send the owner.
-		extra_data = Extra data needed for the message (Optional)
+        guild = discord.Guild object
+        permissions = Value to be passed to discord.Permissions(permissions = ?)
+        method = The specific error message to send the owner.
+        extra_data = Extra data needed for the message (Optional)
 
-		"""
+        """
         serverOwner = guild.owner
-        new_permission = discord.Permissions(
-            guild.me.guild_permissions.value + permissions
-        )
+        new_permission = discord.Permissions(guild.me.guild_permissions.value + permissions)
 
         # Get invite link with Permissions requested and Guild auto selected
-        inviteLink = discord.utils.oauth_url(
-            guild.me.id, permissions=new_permission, guild=guild
-        )
+        inviteLink = discord.utils.oauth_url(guild.me.id, permissions=new_permission, guild=guild)
 
         # Dictionary of method that caused the failure, to send appropriate message
         # Created so multiple messages can be used easily
@@ -683,10 +647,7 @@ class ReactionRoles(commands.Cog):
         # messages = {'add_role':'add_role', 'remove_role':'remove_role',
         #            'remove_reaction':'remove_reaction','bad_channel_perms':'bad_channel_perms'}
 
-        message = (
-            messages[method]
-            + f"\n\nIf you would like to stop all DM's from the bot, send the command .silencedm."
-        )
+        message = messages[method] + f"\n\nIf you would like to stop all DM's from the bot, send the command .silencedm."
         await serverOwner.send(message)
 
     @reacttorole.error
@@ -703,8 +664,8 @@ class ReactionRoles(commands.Cog):
 
 def setup(client):
     """
-	Reaction Roles setup
-	"""
+    Reaction Roles setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(ReactionRoles(client))
     logger.info(f"Loaded {__name__}")

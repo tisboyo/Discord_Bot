@@ -51,15 +51,14 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def mod(self, ctx):
         """
-		Moderation
+        Moderation
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None
-            or ctx.invoked_subcommand  # Not in a guild means DM or Group chat.
-            is not None  # A subcommand was used.
+            or ctx.invoked_subcommand is not None  # Not in a guild means DM or Group chat.  # A subcommand was used.
         ):
             return
 
@@ -70,14 +69,14 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def edit_channel(self, ctx, channel: discord.TextChannel):
         """
-		Sets a channel for edit notifications
+        Sets a channel for edit notifications
 
-		Usage:
-			To set: mod edit_channel #Channel_Name
-			To display: mod edit_channel
+        Usage:
+                To set: mod edit_channel #Channel_Name
+                To display: mod edit_channel
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
@@ -116,14 +115,14 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def delete_channel(self, ctx, channel: discord.TextChannel):
         """
-		Sets a channel for message delete notifications
+        Sets a channel for message delete notifications
 
-		Usage:
-			To set: mod delete_channel #Channel_Name
-			To display: mod delete_channel
+        Usage:
+                To set: mod delete_channel #Channel_Name
+                To display: mod delete_channel
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
@@ -162,16 +161,15 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def disable(self, ctx):
         """
-		Used to disable features of moderation plugin.
+        Used to disable features of moderation plugin.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if (
             ctx.guild == None
-            or ctx.invoked_subcommand  # Not in a guild means DM or Group chat.
-            is not None  # A subcommand was used.
+            or ctx.invoked_subcommand is not None  # Not in a guild means DM or Group chat.  # A subcommand was used.
         ):
             return
 
@@ -182,12 +180,12 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def edit_channel_disable(self, ctx):
         """
-		Used to disable announcing edits.
+        Used to disable announcing edits.
 
-		Usage: mod disable edit_channel
+        Usage: mod disable edit_channel
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
@@ -203,12 +201,12 @@ class Moderation(commands.Cog):
     @Permissions.check()
     async def delete_channel_disable(self, ctx):
         """
-		Used to disable announce message deletions.
+        Used to disable announce message deletions.
 
-		Usage: mod disable delete_channel
+        Usage: mod disable delete_channel
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
@@ -228,9 +226,7 @@ class Moderation(commands.Cog):
 
         # Guard Clause
         if (  # edit_channel has been set
-            not Database.Cogs[self.name][guild_id]["settings"].get(
-                "edit_channel", False
-            )
+            not Database.Cogs[self.name][guild_id]["settings"].get("edit_channel", False)
             or not payload.data.get("author", False)
             or Database.Bot[  # Occurs when an embed only edit is made
                 "sleeping"
@@ -280,9 +276,7 @@ class Moderation(commands.Cog):
 
         # Guard Clause
         if (  # delete_channel has been set
-            not Database.Cogs[self.name][payload.guild_id]["settings"].get(
-                "delete_channel", False
-            )
+            not Database.Cogs[self.name][payload.guild_id]["settings"].get("delete_channel", False)
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
         ):
             return
@@ -300,27 +294,17 @@ class Moderation(commands.Cog):
                 return
 
         if payload.cached_message == None:  # Message was not in cache
-            await channel.send(
-                f"An uncached message has been deleted in {message_channel.mention}"
-            )
+            await channel.send(f"An uncached message has been deleted in {message_channel.mention}")
         else:  # Message was in cache
             embed = discord.Embed(title="Message Deleted")
-            embed.add_field(
-                name="Author", value=f"{payload.cached_message.author.mention} "
-            )
+            embed.add_field(name="Author", value=f"{payload.cached_message.author.mention} ")
             embed.add_field(name="Channel", value=f"{message_channel.mention} ")
 
             # Figure out how old the message is, so we can say that.
-            original_time = payload.cached_message.created_at.strftime(
-                "%H:%M:%S %Y/%m/%d"
-            )
-            how_long_ago = (
-                datetime.datetime.utcnow() - payload.cached_message.created_at
-            )
+            original_time = payload.cached_message.created_at.strftime("%H:%M:%S %Y/%m/%d")
+            how_long_ago = datetime.datetime.utcnow() - payload.cached_message.created_at
 
-            embed.add_field(
-                name="Original Time", value=f"{original_time} ({how_long_ago} ago.)"
-            )
+            embed.add_field(name="Original Time", value=f"{original_time} ({how_long_ago} ago.)")
 
             if len(payload.cached_message.content) > 0:
                 embed.add_field(
@@ -329,9 +313,7 @@ class Moderation(commands.Cog):
                     inline=False,
                 )
             else:
-                embed.add_field(
-                    name="Message Contents", value="Bot embed or image.", inline=False
-                )
+                embed.add_field(name="Message Contents", value="Bot embed or image.", inline=False)
 
             await channel.send("", embed=embed)
 
@@ -351,10 +333,12 @@ class Moderation(commands.Cog):
 
     def cog_unload(self):
         logger.info(f"{__name__} unloaded...")
+
+
 def setup(client):
     """
-	Moderation setup
-	"""
+    Moderation setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Moderation(client))
     logger.info(f"Loaded {__name__}")

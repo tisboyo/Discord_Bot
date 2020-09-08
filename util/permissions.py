@@ -18,28 +18,28 @@ logger = logging.getLogger(__name__)
 
 class Permissions(commands.Cog):
     """
-	Use by calling Permissions.check() before a command declaration similar to commands.check()
+    Use by calling Permissions.check() before a command declaration similar to commands.check()
 
-	Usage: In order of priority
-		Permissions.check() #Will only allow Administrator and Bot Owner to use command
+    Usage: In order of priority
+            Permissions.check() #Will only allow Administrator and Bot Owner to use command
 
-		#Restrict a command to only a specific guild, mainly for testing.
-		Permissions.check(guild = [GUILD_ID_AS_INT, GUILD2_ID_AS_INT]) #Must pass a list of integers
+            #Restrict a command to only a specific guild, mainly for testing.
+            Permissions.check(guild = [GUILD_ID_AS_INT, GUILD2_ID_AS_INT]) #Must pass a list of integers
 
-		#Explicit user permissions are then checked, there is no hard code override available.
+            #Explicit user permissions are then checked, there is no hard code override available.
 
-		#Roles are checked next, if 'any' or 'everyone' is defined in the bot, it can be overridden
-		#by assigning a role manually to the command.
-		Permissions.check(role="any") or Permissions.check(role="everyone") #Any role or everyone can use command
+            #Roles are checked next, if 'any' or 'everyone' is defined in the bot, it can be overridden
+            #by assigning a role manually to the command.
+            Permissions.check(role="any") or Permissions.check(role="everyone") #Any role or everyone can use command
 
-		#Lastly is permissions checks
-		#Can be passed as a list of strings of valid discord permissions.
-		#See Permissions.perm_list for valid arguments.
-		Permissions.check(permission='read_messages') or (permission=['read_messages', 'send_messages'])
+            #Lastly is permissions checks
+            #Can be passed as a list of strings of valid discord permissions.
+            #See Permissions.perm_list for valid arguments.
+            Permissions.check(permission='read_messages') or (permission=['read_messages', 'send_messages'])
 
-		Any of the 3, (guild, role, permission) can be combined into a single check, but will execute
-		in the above order.
-	"""
+            Any of the 3, (guild, role, permission) can be combined into a single check, but will execute
+            in the above order.
+    """
 
     perms_list = [
         "administrator",
@@ -218,9 +218,7 @@ class Permissions(commands.Cog):
                 perm_dict = dict()
 
                 # Read all of the authors permissions
-                for perm, values in ctx.message.author.permissions_in(
-                    ctx.message.channel
-                ):
+                for perm, values in ctx.message.author.permissions_in(ctx.message.channel):
                     perm_dict[perm] = values
 
                 for perm in handle["_permissions"]:
@@ -249,10 +247,10 @@ class Permissions(commands.Cog):
     @check()  # Can't use Permissions.Check inside the Permissions class
     async def permissions(self, ctx):
         """
-		Used to set permissions for commands.
+        Used to set permissions for commands.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if (
@@ -269,10 +267,10 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_add(self, ctx):
         """
-		Add user, role or permissions
+        Add user, role or permissions
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
@@ -288,20 +286,18 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_add_role(self, ctx, role, *, command):
         """
-		Gives the Role permissions to use the command.
+        Gives the Role permissions to use the command.
 
-		Role can be either mentioned, or just the name.
-		Can also be 'any', 'everyone' or 'none'
+        Role can be either mentioned, or just the name.
+        Can also be 'any', 'everyone' or 'none'
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -339,22 +335,20 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_add_user(self, ctx, member, *, command):
         """
-		Gives the User permissions to use the command.
+        Gives the User permissions to use the command.
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -387,26 +381,24 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_add_permission(self, ctx, permission, *, command):
         """
-		Gives all users with the specified permission access to the command.
+        Gives all users with the specified permission access to the command.
 
-		Available permissions
-		'administrator', 'create_instant_invite', 'ban_members', 'manage_channels',
-		'manage_guild', 'add_reactions', 'view_audit_log', 'priority_speaker',
-		'stream', 'read_messages', 'send_messages', 'send_tts_messages',
-		'manage_messages', 'embed_links', 'attach_files', 'read_message_history',
-		'mention_everyone', 'external_emojis', 'connect', 'speak', 'mute_members',
-		'deafen_members', 'move_members', 'use_voice_activation', 'change_nickname',
-		'manage_nicknames', 'manage_roles', 'manage_webhooks', 'manage_emojis', 'kick_members'
+        Available permissions
+        'administrator', 'create_instant_invite', 'ban_members', 'manage_channels',
+        'manage_guild', 'add_reactions', 'view_audit_log', 'priority_speaker',
+        'stream', 'read_messages', 'send_messages', 'send_tts_messages',
+        'manage_messages', 'embed_links', 'attach_files', 'read_message_history',
+        'mention_everyone', 'external_emojis', 'connect', 'speak', 'mute_members',
+        'deafen_members', 'move_members', 'use_voice_activation', 'change_nickname',
+        'manage_nicknames', 'manage_roles', 'manage_webhooks', 'manage_emojis', 'kick_members'
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -438,17 +430,15 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_list(self, ctx, *, command):
         """
-		List permissions for the specified command
+        List permissions for the specified command
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -498,10 +488,10 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_del(self, ctx):
         """
-		Add user, role or permissions
+        Add user, role or permissions
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
@@ -517,20 +507,18 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_del_role(self, ctx, role, *, command):
         """
-		Removes the Role's permission to use the command.
+        Removes the Role's permission to use the command.
 
-		Role can be either mentioned, or just the name.
-		Can also be 'any', 'everyone' or 'none'
+        Role can be either mentioned, or just the name.
+        Can also be 'any', 'everyone' or 'none'
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -569,22 +557,20 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_del_user(self, ctx, member, *, command):
         """
-		Gives the User permissions to use the command.
+        Gives the User permissions to use the command.
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -617,26 +603,24 @@ class Permissions(commands.Cog):
     @check()
     async def permissions_del_permission(self, ctx, permission, *, command):
         """
-		Removes permissions for all users with the specified permission access to the command.
+        Removes permissions for all users with the specified permission access to the command.
 
-		Available permissions
-		'administrator', 'create_instant_invite', 'ban_members', 'manage_channels',
-		'manage_guild', 'add_reactions', 'view_audit_log', 'priority_speaker',
-		'stream', 'read_messages', 'send_messages', 'send_tts_messages',
-		'manage_messages', 'embed_links', 'attach_files', 'read_message_history',
-		'mention_everyone', 'external_emojis', 'connect', 'speak', 'mute_members',
-		'deafen_members', 'move_members', 'use_voice_activation', 'change_nickname',
-		'manage_nicknames', 'manage_roles', 'manage_webhooks', 'manage_emojis', 'kick_members'
+        Available permissions
+        'administrator', 'create_instant_invite', 'ban_members', 'manage_channels',
+        'manage_guild', 'add_reactions', 'view_audit_log', 'priority_speaker',
+        'stream', 'read_messages', 'send_messages', 'send_tts_messages',
+        'manage_messages', 'embed_links', 'attach_files', 'read_message_history',
+        'mention_everyone', 'external_emojis', 'connect', 'speak', 'mute_members',
+        'deafen_members', 'move_members', 'use_voice_activation', 'change_nickname',
+        'manage_nicknames', 'manage_roles', 'manage_webhooks', 'manage_emojis', 'kick_members'
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if (
             ctx.guild == None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
-            or not self.valid_command(
-                ctx.guild, command
-            )  # Check if the command is valid
+            or not self.valid_command(ctx.guild, command)  # Check if the command is valid
         ):
             return
 
@@ -684,8 +668,8 @@ class Permissions(commands.Cog):
 
     def save_permissions(self, ctx):
         """
-		Saves all of the permissions settings to the database
-		"""
+        Saves all of the permissions settings to the database
+        """
 
         save = json.dumps(Database.Cogs[self.name][ctx.guild.id]["permissions"])
         Database.Cogs[self.name][ctx.guild.id]["settings"]["permissions"] = save
@@ -693,13 +677,9 @@ class Permissions(commands.Cog):
         # Set database handle
         cursor = Database.cursor[ctx.guild.id]
 
-        query = (
-            f"UPDATE {self.name}_settings SET setting_data = ? WHERE setting_id = ? "
-        )
+        query = f"UPDATE {self.name}_settings SET setting_data = ? WHERE setting_id = ? "
         values = (save, "permissions")
-        _, rows = Database.dbExecute(
-            self, cursor, ctx.guild.id, query, values, False, True
-        )
+        _, rows = Database.dbExecute(self, cursor, ctx.guild.id, query, values, False, True)
 
         # Entry was not in the database, insert it.
         if rows == 0:
@@ -709,8 +689,8 @@ class Permissions(commands.Cog):
 
     def perm_handle(self, ctx, command):
         """
-		Returns a handle for the permission of the qualified command
-		"""
+        Returns a handle for the permission of the qualified command
+        """
 
         qualified_name = command.split()
 
@@ -742,10 +722,10 @@ class Permissions(commands.Cog):
 
     def valid_command(self, guild: discord.Guild, command=str):
         """
-		Builds a command list and saves it in a dictionary
-		Does not check if command is enabled, just that it's a valid command.
-		Raises commands.BadCommand if the command is not valid.
-		"""
+        Builds a command list and saves it in a dictionary
+        Does not check if command is enabled, just that it's a valid command.
+        Raises commands.BadCommand if the command is not valid.
+        """
 
         # Not saved for later use because I want to check it every time, in case commands are disabled
         db = dict()
@@ -786,8 +766,8 @@ class Permissions(commands.Cog):
 
 def setup(client):
     """
-	Permissions setup
-	"""
+    Permissions setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Permissions(client))
     logger.info(f"Loaded {__name__}")

@@ -23,15 +23,15 @@ logger = logging.getLogger(__name__)
 
 class ReactToMessages(commands.Cog):
     """
-	This module will add a reaction to users messages at random.
+    This module will add a reaction to users messages at random.
 
-	Data format
-	Database.Cogs[self.name][guild_id]['users'][member_id]['emojis'] = list()
-														  ['frequency'] = int()
-														  ['lastquery'] = datetime.datetime object
+    Data format
+    Database.Cogs[self.name][guild_id]['users'][member_id]['emojis'] = list()
+                                                                                                              ['frequency'] = int()
+                                                                                                              ['lastquery'] = datetime.datetime object
 
 
-	"""
+    """
 
     # Set this to check how often the database will be queried for a users data
     user_query_frequency = datetime.timedelta(minutes=15)
@@ -134,10 +134,10 @@ class ReactToMessages(commands.Cog):
     @Permissions.check(permission=["add_reactions"])
     async def react_to_messages(self, ctx):
         """
-		Adds reactions to user messages automatically.
+        Adds reactions to user messages automatically.
 
-		Default Permissions: add_reactions permission
-		"""
+        Default Permissions: add_reactions permission
+        """
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # A subcommand was used.
             return
@@ -146,8 +146,8 @@ class ReactToMessages(commands.Cog):
 
     def get_user_data(self, member):
         """
-		Reads the users data from the database and stores it in memory
-		"""
+        Reads the users data from the database and stores it in memory
+        """
         if not Database.Cogs[self.name][member.guild.id]["users"].get(member.id, False):
             # User doesn't exist in memory yet, need to create them
             Database.Cogs[self.name][member.guild.id]["users"][member.id] = dict()
@@ -169,45 +169,29 @@ class ReactToMessages(commands.Cog):
 
             if result is not None:
                 # Store the results
-                Database.Cogs[self.name][member.guild.id]["users"][member.id][
-                    "emojis"
-                ] = json.loads(result[1])
-                Database.Cogs[self.name][member.guild.id]["users"][member.id][
-                    "frequency"
-                ] = int(result[2])
-                Database.Cogs[self.name][member.guild.id]["users"][member.id][
-                    "lastquery"
-                ] = datetime.datetime.utcnow()
-                logger.debug(
-                    f"Member {member.id}-{member} retrieved from {self.name}_users"
-                )
+                Database.Cogs[self.name][member.guild.id]["users"][member.id]["emojis"] = json.loads(result[1])
+                Database.Cogs[self.name][member.guild.id]["users"][member.id]["frequency"] = int(result[2])
+                Database.Cogs[self.name][member.guild.id]["users"][member.id]["lastquery"] = datetime.datetime.utcnow()
+                logger.debug(f"Member {member.id}-{member} retrieved from {self.name}_users")
 
             else:
                 # No results, create empty ones
-                Database.Cogs[self.name][member.guild.id]["users"][member.id][
-                    "emojis"
-                ] = list()
+                Database.Cogs[self.name][member.guild.id]["users"][member.id]["emojis"] = list()
                 Database.Cogs[self.name][member.guild.id]["users"][member.id][
                     "frequency"
                 ] = 10  # 1 in 10 is the default value
-                Database.Cogs[self.name][member.guild.id]["users"][member.id][
-                    "lastquery"
-                ] = datetime.datetime.utcnow()
-                logger.debug(
-                    f"Member {member.id}-{member} did not exist in {self.name}_users"
-                )
+                Database.Cogs[self.name][member.guild.id]["users"][member.id]["lastquery"] = datetime.datetime.utcnow()
+                logger.debug(f"Member {member.id}-{member} did not exist in {self.name}_users")
 
     def write_user_data(self, member):
         """
-		Writes the users data back to the database.
-		"""
+        Writes the users data back to the database.
+        """
 
         # Check to make sure the user is actually in memory, thereby get_user_data was called for this member
         if not Database.Cogs[self.name][member.guild.id]["users"].get(member.id, False):
             # User doesn't exist in memory, throw an error and bail
-            logger.error(
-                "ReactToMessages.write_user_data called before a user was read."
-            )
+            logger.error("ReactToMessages.write_user_data called before a user was read.")
             return
 
         # Shorter names to use in queries
@@ -215,19 +199,13 @@ class ReactToMessages(commands.Cog):
             Database.Cogs[self.name][member.guild.id]["users"][member.id]["emojis"],
             ensure_ascii=False,
         )
-        frequency = Database.Cogs[self.name][member.guild.id]["users"][member.id].get(
-            "frequency", 10
-        )
+        frequency = Database.Cogs[self.name][member.guild.id]["users"][member.id].get("frequency", 10)
 
         cursor = Database.cursor[member.guild.id]
 
-        query = (
-            f"UPDATE {self.name}_users SET emojis = ?, frequency = ? WHERE user_id = ?"
-        )
+        query = f"UPDATE {self.name}_users SET emojis = ?, frequency = ? WHERE user_id = ?"
         values = (emojis, frequency, member.id)
-        _, rows = Database.dbExecute(
-            self, cursor, member.guild.id, query, values, False, True
-        )
+        _, rows = Database.dbExecute(self, cursor, member.guild.id, query, values, False, True)
         logger.debug(f"Member {member.id}-{member} updated in {self.name}_users")
 
         if rows == 0:
@@ -241,20 +219,20 @@ class ReactToMessages(commands.Cog):
     @Permissions.check(permission=["add_reactions"])
     async def add(self, ctx, member, emoji):
         """
-		Add a reaction to a users messages
+        Add a reaction to a users messages
 
-		Usage: add (User) (An Emoji)
+        Usage: add (User) (An Emoji)
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		For the Emoji, send any guild or regular emoji.
-		If it doesn't appear when you send it, you will
-		get an Invalid Argument error.
+        For the Emoji, send any guild or regular emoji.
+        If it doesn't appear when you send it, you will
+        get an Invalid Argument error.
 
-		Default Permissions: add_reactions permission
-		"""
+        Default Permissions: add_reactions permission
+        """
 
         mentions = ctx.message.mentions
 
@@ -286,15 +264,11 @@ class ReactToMessages(commands.Cog):
             try:
                 # We are responding with the emoji the user requested, primarily as a test
                 # to see if the emoji is valid. If it's not, it throws a HTTPException code 10014
-                await ctx.message.add_reaction(
-                    emoji
-                )  # Add the emoji the user requested.
+                await ctx.message.add_reaction(emoji)  # Add the emoji the user requested.
 
             except discord.HTTPException as e:
                 if e.code == 10014:
-                    await ctx.send(
-                        f"Sorry, but discord doesn't have that emoji in it's reaction library."
-                    )
+                    await ctx.send(f"Sorry, but discord doesn't have that emoji in it's reaction library.")
 
                     # Send failure to the user
                     await Utils.send_failure(self, ctx.message)
@@ -303,9 +277,7 @@ class ReactToMessages(commands.Cog):
                     return
 
                 elif e.code == 50013:
-                    await ctx.send(
-                        f"I'm sorry, but I'm not allowed to add reactions to messages."
-                    )
+                    await ctx.send(f"I'm sorry, but I'm not allowed to add reactions to messages.")
                     return
 
                 else:  # A different error code
@@ -326,29 +298,27 @@ class ReactToMessages(commands.Cog):
             await Utils.send_confirmation(self, ctx.message)
 
         else:
-            await ctx.send(
-                f"{emoji} is already in the list for {mentions[0].display_name}."
-            )
+            await ctx.send(f"{emoji} is already in the list for {mentions[0].display_name}.")
 
     @react_to_messages.command(name="del", aliases=["remove"])
     @commands.guild_only()
     @Permissions.check(permission=["add_reactions"])
     async def _del(self, ctx, member, emojiRaw):
         """
-		Remove a reaction from the list of reactions
+        Remove a reaction from the list of reactions
 
-		Usage: del (User) (An Emoji)
+        Usage: del (User) (An Emoji)
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		For the Emoji, send any guild or regular emoji.
-		If it doesn't appear when you send it, you will
-		get an Invalid Argument error.
+        For the Emoji, send any guild or regular emoji.
+        If it doesn't appear when you send it, you will
+        get an Invalid Argument error.
 
-		Default Permissions: add_reactions permission
-		"""
+        Default Permissions: add_reactions permission
+        """
 
         mentions = ctx.message.mentions
 
@@ -398,16 +368,16 @@ class ReactToMessages(commands.Cog):
     @Permissions.check(permission=["add_reactions"])
     async def _list(self, ctx, member):
         """
-		Lists the reactions for a user.
+        Lists the reactions for a user.
 
-		Usage: listreactions (User)
+        Usage: listreactions (User)
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		Default Permissions: add_reactions permission
-		"""
+        Default Permissions: add_reactions permission
+        """
 
         mentions = ctx.message.mentions
 
@@ -447,8 +417,8 @@ class ReactToMessages(commands.Cog):
 
 def setup(client):
     """
-	setup
-	"""
+    setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(ReactToMessages(client))
     logger.info(f"Loaded {__name__}")

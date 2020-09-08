@@ -45,8 +45,8 @@ class BanHammer(commands.Cog):
 
 def setup(client):
     """
-	BanHammer setup
-	"""
+    BanHammer setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(BanHammer(client))
     logger.info(f"Loaded {__name__}")

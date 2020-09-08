@@ -76,18 +76,13 @@ class Voice(commands.Cog):
     async def on_message(self, message):
 
         # Guard Clause
-        if (
-            message.guild == None  # Not in a guild means DM or Group chat.
-            or message.author.bot  # Ignore bots
-        ):
+        if message.guild == None or message.author.bot:  # Not in a guild means DM or Group chat.  # Ignore bots
             return
 
         last_message_channels = Database.Cogs[self.name][message.guild.id]
 
         nt = namedtuple("last_message", "channel time")
-        last_message_channels[message.author.id] = nt(
-            channel=message.channel, time=datetime.datetime.now()
-        )
+        last_message_channels[message.author.id] = nt(channel=message.channel, time=datetime.datetime.now())
 
     @commands.command()
     @Permissions.check(role="everyone")
@@ -96,9 +91,7 @@ class Voice(commands.Cog):
         Send a text to speech message in the voice channel associated with the text channel.
         """
 
-        voice_channel = self.get_voice_channel_by_name(
-            ctx.guild, ctx.message.channel.name
-        )
+        voice_channel = self.get_voice_channel_by_name(ctx.guild, ctx.message.channel.name)
 
         if (
             # Unable to find a voice channel with the name of the current text channel
@@ -109,9 +102,7 @@ class Voice(commands.Cog):
             or ctx.message.author.voice.channel != voice_channel
         ):
 
-            await ctx.send(
-                f"Sorry, you have to be in voice channel with the name `{ctx.message.channel.name}`"
-            )
+            await ctx.send(f"Sorry, you have to be in voice channel with the name `{ctx.message.channel.name}`")
             await ctx.message.add_reaction("🚫")
             return
 
@@ -176,8 +167,7 @@ class Voice(commands.Cog):
         before: discord.member.VoiceState,
         after: discord.member.VoiceState,
     ):
-        """
-        """
+        """"""
         # Guard Clause
         if member.bot:  # Ignore any bots in voice
             return
@@ -190,10 +180,7 @@ class Voice(commands.Cog):
                 pass
 
             else:  # Something else happened
-                if (
-                    member.voice.self_stream
-                    and member.id not in self.currently_streaming
-                ):
+                if member.voice.self_stream and member.id not in self.currently_streaming:
                     # Member started streaming
                     Utils.starprint("Member started streaming")
                     self.currently_streaming.append(member.id)
@@ -209,10 +196,7 @@ class Voice(commands.Cog):
                     Utils.starprint("Member self muted")
 
                 else:
-                    if (
-                        member.id in self.currently_streaming
-                        and not member.voice.self_stream
-                    ):
+                    if member.id in self.currently_streaming and not member.voice.self_stream:
                         # Member stopped streaming
                         Utils.starprint("Member stopped streaming")
                         self.currently_streaming.remove(member.id)
@@ -225,7 +209,9 @@ class Voice(commands.Cog):
             await self.member_left_voice_channel(member, guild, before)
 
     async def dm_member(
-        self, member: discord.Member, expired_message: bool = False,
+        self,
+        member: discord.Member,
+        expired_message: bool = False,
     ):
         if not expired_message:
             # DM the user a friendly note.
@@ -304,9 +290,7 @@ class Voice(commands.Cog):
         except discord.HTTPException as e:
             if e.code == 50013:
                 # Missing Permissions error
-                logger.warning(
-                    f"Missing Permissions to move a user to another channel in {member.guild}"
-                )
+                logger.warning(f"Missing Permissions to move a user to another channel in {member.guild}")
                 return
 
     async def member_joined_lobby(
@@ -357,9 +341,7 @@ class Voice(commands.Cog):
                 )
             except discord.HTTPException as e:
                 if e.code == 50013:
-                    logger.warning(
-                        f"Missing Permissions to create voice channel in {guild}."
-                    )
+                    logger.warning(f"Missing Permissions to create voice channel in {guild}.")
 
                     # TODO DM Server Owner for permissions.
                 return
@@ -372,9 +354,7 @@ class Voice(commands.Cog):
             except discord.HTTPException as e:
                 if e.code == 50013:
                     # Missing Permissions error
-                    logger.warning(
-                        f"Missing Permissions to move a user to another channel in {guild}"
-                    )
+                    logger.warning(f"Missing Permissions to move a user to another channel in {guild}")
                     return
 
     async def member_left_voice_channel(self, member, guild, before):
@@ -406,19 +386,14 @@ class Voice(commands.Cog):
                 # If the channel is still empty, delete it.
                 if len(before.channel.members) == 0:
                     await before.channel.delete()
-                    await text_channel.send(
-                        "Voice channel has been deleted. Join `Lobby` to re-create."
-                    )
+                    await text_channel.send("Voice channel has been deleted. Join `Lobby` to re-create.")
 
     def get_text_channel_by_name(self, guild, channel_name):
         """
         Get text channel object by channel_name
         """
         for channel in guild.channels:
-            if (
-                channel.name == channel_name
-                and channel.type == discord.ChannelType.text
-            ):
+            if channel.name == channel_name and channel.type == discord.ChannelType.text:
                 # Check for bot permissions
                 if channel.permissions_for(guild.me).send_messages:
                     return channel
@@ -455,8 +430,8 @@ class Voice(commands.Cog):
 
 def setup(client):
     """
-	Voice setup
-	"""
+    Voice setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Voice(client))
     logger.info(f"Loaded {__name__}")

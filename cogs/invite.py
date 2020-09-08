@@ -42,18 +42,14 @@ class Invite(commands.Cog):
     @commands.command()
     async def invite(self, ctx):
         """
-		Responds with a current invite link to share with friends.
-		"""
+        Responds with a current invite link to share with friends.
+        """
 
         if ctx.guild.id == 425699298957852672:
-            await ctx.send(
-                "Feel free to share this invite link: https://discord.io/HardwareFlare"
-            )
+            await ctx.send("Feel free to share this invite link: https://discord.io/HardwareFlare")
         elif ctx.guild.id == 378302095633154050:
             new_permission = discord.Permissions(ctx.guild.me.guild_permissions.value)
-            inviteLink = discord.utils.oauth_url(
-                ctx.guild.me.id, permissions=new_permission, guild=ctx.guild
-            )
+            inviteLink = discord.utils.oauth_url(ctx.guild.me.id, permissions=new_permission, guild=ctx.guild)
             await ctx.send(inviteLink)
         elif ctx.guild.id == 369243434080272385:
             await ctx.send("http://addohms.com/discord")
@@ -68,8 +64,8 @@ class Invite(commands.Cog):
 
 def setup(client):
     """
-	Invite setup
-	"""
+    Invite setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Invite(client))
     logger.info(f"Loaded {__name__}")

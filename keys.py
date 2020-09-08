@@ -17,7 +17,9 @@ logging_level = logging.INFO if not os.getenv("DEBUG") else logging.DEBUG
 
 # Authentication Keys
 # Discord API Key
-discord = dict(token=os.getenv("discord_token"),)
+discord = dict(
+    token=os.getenv("discord_token"),
+)
 
 # Twitter API Key
 twitter = dict(
@@ -51,4 +53,3 @@ twitch = dict(
     # OAuth Key
     key=os.getenv("twitch_key"),
 )
-

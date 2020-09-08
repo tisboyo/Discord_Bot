@@ -24,10 +24,10 @@ class Ping(commands.Cog):
     @Permissions.check(role="everyone")
     async def ping(self, ctx):
         """
-		The bot will respond with it's latency.
+        The bot will respond with it's latency.
 
-		Default Permissions: Everyone role
-		"""
+        Default Permissions: Everyone role
+        """
 
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
@@ -43,8 +43,8 @@ class Ping(commands.Cog):
 
 def setup(client):
     """
-	Ping setup
-	"""
+    Ping setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Ping(client))
     logger.info(f"Loaded {__name__}")

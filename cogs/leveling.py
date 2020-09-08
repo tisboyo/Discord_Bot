@@ -29,10 +29,7 @@ class Levels(commands.Cog):
         Database.readSettings(self)
 
         for guild_id in Database.Main:
-            if (
-                Database.Cogs[self.name][guild_id]["settings"].get("dbVer", 0)
-                < self.db_users_ver
-            ):
+            if Database.Cogs[self.name][guild_id]["settings"].get("dbVer", 0) < self.db_users_ver:
                 self.db_setup(guild_id)
 
     def db_setup(self, guild_id):
@@ -86,15 +83,11 @@ class Levels(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         for guild in self.client.guilds:
-            if not Database.Cogs[self.name][guild.id]["settings"].get(
-                "firstRunSetup", 0
-            ):
+            if not Database.Cogs[self.name][guild.id]["settings"].get("firstRunSetup", 0):
                 await self.first_run_setup(guild)
 
     def first_run_setup(self, guild):
-        logger.info(
-            f"[levels] Loading existing guild members into database for {guild.id}"
-        )
+        logger.info(f"[levels] Loading existing guild members into database for {guild.id}")
 
         cursor = Database.cursor[guild.id]
 
@@ -132,8 +125,8 @@ class Levels(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """
-		Insert the newly joined member into the levels table
-		"""
+        Insert the newly joined member into the levels table
+        """
 
         cursor = Database.cursor[member.guild.id]
 
@@ -153,18 +146,18 @@ class Levels(commands.Cog):
     @Permissions.check()
     async def setlevel(self, ctx, member, level: int):
         """
-		Sets the users level.
+        Sets the users level.
 
-		Use this command to manually set a user level.
+        Use this command to manually set a user level.
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user.
+        If name#discriminator has a space, wrap it in quotes.
 
-		This is useful when migrating from another bot such as MEE6.
+        This is useful when migrating from another bot such as MEE6.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # If the bot is sleeping, don't do anything.
         if Database.Bot["sleeping"]:
@@ -200,7 +193,9 @@ class Levels(commands.Cog):
                     output = f"{each.mention}'s level has been updated from {previousLevel} to {level}"
 
                 else:
-                    output = f"{each.mention} must have been naughty for you reduce their level from {previousLevel} to {level}"
+                    output = (
+                        f"{each.mention} must have been naughty for you reduce their level from {previousLevel} to {level}"
+                    )
 
                 await ctx.send(output)
 
@@ -209,17 +204,17 @@ class Levels(commands.Cog):
     @Permissions.check(role="everyone")
     async def level(self, ctx, member):
         """
-		Display the users level.
+        Display the users level.
 
-		Use this command to see the mentioned users level.
+        Use this command to see the mentioned users level.
 
-		You can either mention a user, use their name or
-		name#discriminator without mentioning the user or
-		the users snowflake UID.
-		If name#discriminator has a space, wrap it in quotes.
+        You can either mention a user, use their name or
+        name#discriminator without mentioning the user or
+        the users snowflake UID.
+        If name#discriminator has a space, wrap it in quotes.
 
-		Default Permissions: Everyone role
-		"""
+        Default Permissions: Everyone role
+        """
 
         # Read in any mentions
         mentions = ctx.message.mentions
@@ -233,9 +228,7 @@ class Levels(commands.Cog):
                 new_member = dict()
                 new_member["id"] = int(member)
                 new_member["display_name"] = f"UID: {member}"
-                new_member[
-                    "avatar_url"
-                ] = "https://cdn.discordapp.com/embed/avatars/1.png"
+                new_member["avatar_url"] = "https://cdn.discordapp.com/embed/avatars/1.png"
                 member = dotdict(new_member)
                 mentions.append(member)
 
@@ -260,18 +253,14 @@ class Levels(commands.Cog):
                 embed.set_thumbnail(url=each.avatar_url)
                 if result is None:
                     # User isn't in the database
-                    embed.add_field(
-                        name="Lurker?", value=f"{displayName} hasn't been seen."
-                    )
+                    embed.add_field(name="Lurker?", value=f"{displayName} hasn't been seen.")
 
                 else:
                     embed.add_field(name="Level", value=f"{result[1]}")
                     embed.add_field(name="Experience", value=f"{result[0]}")
                     embed.add_field(name="Words spoken", value=f"{result[2]}")
                     embed.add_field(name="Messages sent", value=f"{result[3]}")
-                    embed.add_field(
-                        name="Last seen", value=f"[{result[4]}]({result[5]})"
-                    )
+                    embed.add_field(name="Last seen", value=f"[{result[4]}]({result[5]})")
                     if Database.Cogs["karma"][ctx.guild.id]["settings"]["enabled"]:
                         embed.add_field(
                             name="Karma",
@@ -288,9 +277,7 @@ class Levels(commands.Cog):
             or len(message.content) == 0  # No points for bots
             or message.guild == None  # No message contents, users join/leave/reactions
             or message.content[0]  # Not in a guild means DM or Group chat.
-            == Database.Main[message.guild.id].get(
-                "prefix", "."
-            )  # No points for commands
+            == Database.Main[message.guild.id].get("prefix", ".")  # No points for commands
         ):
             return  # Abort abort!
 
@@ -301,9 +288,7 @@ class Levels(commands.Cog):
         cursor = Database.cursor[message.author.guild.id]
 
         # What is the current experience.
-        query = (
-            "SELECT exp, level, words, messages, lastexp FROM users WHERE user_id = ?"
-        )
+        query = "SELECT exp, level, words, messages, lastexp FROM users WHERE user_id = ?"
         values = (message.author.id,)
         result = Database.dbExecute(self, cursor, message.guild.id, query, values)
 
@@ -354,8 +339,8 @@ class Levels(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         """
-		When a member changes their nickname, store the old one in the database.
-		"""
+        When a member changes their nickname, store the old one in the database.
+        """
 
         # Guard Clause
         if before.nick == after.nick:  # nickname wasn't changed
@@ -400,10 +385,10 @@ class Levels(commands.Cog):
 
     def countWords(self, message):
         """
-		countWords(message)
+        countWords(message)
 
-		returns number of words that count as an int.
-		"""
+        returns number of words that count as an int.
+        """
         text = message.content
         splitText = sorted(text.split(), key=len)
 
@@ -415,22 +400,20 @@ class Levels(commands.Cog):
         # Count the number of words that are equal to or over a specified length
         minLength = 3
         for each in range(len(splitText)):
-            if (
-                len(splitText[each]) >= minLength
-            ):  # Minimum 3 characters to count as a word
+            if len(splitText[each]) >= minLength:  # Minimum 3 characters to count as a word
                 count += 1
         return count
 
     def gainExperience(self, exp, level, wordCount):
         """
-		gainExperience(self, exp, level, wordCount)
+        gainExperience(self, exp, level, wordCount)
 
-		returns exp as int, level as int
+        returns exp as int, level as int
 
-		Figures out and returns the new values for exp and level
-		Uses the mee6 formula for levels of 5 * (lvl ^ 2) + 50 * lvl + 100
-		Plus some secret sauce for exp
-		"""
+        Figures out and returns the new values for exp and level
+        Uses the mee6 formula for levels of 5 * (lvl ^ 2) + 50 * lvl + 100
+        Plus some secret sauce for exp
+        """
         # figure out experience for this messages
         wordExp = wordCount
         # 1 point per word, minimum 5 points, max 25.
@@ -463,8 +446,8 @@ class Levels(commands.Cog):
 
 def setup(client):
     """
-	Leveling setup
-	"""
+    Leveling setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Levels(client))
     logger.info(f"Loaded {__name__}")

@@ -100,9 +100,7 @@ class Database(commands.Cog):
 
         # Read the current version, on new it shouldn't return anything.
         try:
-            cursor.execute(
-                "SELECT setting_data FROM main WHERE setting_id = 'schemaVersion'"
-            )
+            cursor.execute("SELECT setting_data FROM main WHERE setting_id = 'schemaVersion'")
             schemaVersion = cursor.fetchone()
             schemaVersion = int(schemaVersion[0])
 
@@ -135,9 +133,7 @@ class Database(commands.Cog):
         if schemaVersion < 12:
             # Added change_prefix support.
             schemaVersion = 12
-            cursor.execute(
-                "INSERT INTO main(setting_id, setting_data) VALUES ('prefix', '.')"
-            )
+            cursor.execute("INSERT INTO main(setting_id, setting_data) VALUES ('prefix', '.')")
 
         if schemaVersion < 15:
             # Add levels_settings table
@@ -222,12 +218,12 @@ class Database(commands.Cog):
     @commands.dm_only()
     async def unloaddb(self, ctx, guild_id):
         """
-            DANGER WILL ROBINSON
+        DANGER WILL ROBINSON
 
-            This is used to close a database forcefully
+        This is used to close a database forcefully
 
-            You will have major problems after running this.
-            And then the bot will exit.
+        You will have major problems after running this.
+        And then the bot will exit.
         """
         import time
 
@@ -278,9 +274,7 @@ class Database(commands.Cog):
             # Pass hide_error = True in call to hide error output
             if not kwargs.get("hide_error", False):
                 # If there is an error, will print to console and return None
-                logger.warning(
-                    f"SQL Error\nquery: {query} \nvalues: {values}\nerror: {error}"
-                )
+                logger.warning(f"SQL Error\nquery: {query} \nvalues: {values}\nerror: {error}")
             raise  # re-raise exception.
 
         # Return all rows, or just one.
@@ -340,25 +334,17 @@ class Database(commands.Cog):
                 # Find the guild ID based on filename
                 guild_id = int(f"{filename[:-4]}")
 
-                new_filename = (
-                    f'{guild_id}-{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.db3'
-                )
+                new_filename = f'{guild_id}-{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}.db3'
 
                 try:
                     # Make a copy of the file
-                    copyfile(
-                        f"./db/{filename}", f"{backup['backup_path']}{new_filename}"
-                    )
-                    logger.info(
-                        f"File {guild_id}.db3 copied to {backup['backup_path']}."
-                    )
+                    copyfile(f"./db/{filename}", f"{backup['backup_path']}{new_filename}")
+                    logger.info(f"File {guild_id}.db3 copied to {backup['backup_path']}.")
 
                     upload_files.append(new_filename)
 
                 except OSError:
-                    logger.warning(
-                        ">>>>>>>>OS Error when copying to backup file.<<<<<<<<"
-                    )
+                    logger.warning(">>>>>>>>OS Error when copying to backup file.<<<<<<<<")
 
         if backup["method"] == "ftp":
             try:
@@ -408,9 +394,7 @@ class Database(commands.Cog):
             setting_data = Database.Cogs[self.name][guild_id]["settings"][setting_key]
 
             # Check if the setting has an id attribute, if so save that instead of the object.
-            if hasattr(
-                Database.Cogs[self.name][guild_id]["settings"][setting_key], "id"
-            ):
+            if hasattr(Database.Cogs[self.name][guild_id]["settings"][setting_key], "id"):
                 setting_data = setting_data.id
 
             query = f"UPDATE {self.name}_settings SET setting_data = ? WHERE setting_id = ? "

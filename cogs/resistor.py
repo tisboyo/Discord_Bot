@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 
 class Resistor(commands.Cog):
     """
-	Resistor Class to use resistor command for figuring out
-	the value of a resistor.
-	"""
+    Resistor Class to use resistor command for figuring out
+    the value of a resistor.
+    """
 
     def __init__(self, client):
         self.client = client
@@ -32,11 +32,11 @@ class Resistor(commands.Cog):
     @Permissions.check(role="everyone")
     async def resistor(self, ctx, *, message="help"):
         """
-		resistor Replies with the value of a resistor
+        resistor Replies with the value of a resistor
 
-		Returns the value of a resistor when passed the appropriate color
-		codes or numeric value for surface mount.
-		"""
+        Returns the value of a resistor when passed the appropriate color
+        codes or numeric value for surface mount.
+        """
         # Always required to pass self when inside of a class for every command
         # Doing *, message in the variables puts everything after resistor into
         # the message variable
@@ -44,14 +44,14 @@ class Resistor(commands.Cog):
         # Setup a couple functions to make life easier.
         def resistorColor(color, num, dictionary):
             """
-			resistorColor(color as String, num as String, dictionary as
-			Dictionary, invalidResult as Boolean)
+            resistorColor(color as String, num as String, dictionary as
+            Dictionary, invalidResult as Boolean)
 
-			returns num as String, invalidResult as Boolean
+            returns num as String, invalidResult as Boolean
 
-			Used to determine the numerical value of a color for both the
-			Significant and Multiplier
-			"""
+            Used to determine the numerical value of a color for both the
+            Significant and Multiplier
+            """
 
             if color in dictionary:  # The color recieved was in the dictionary
                 return num + dictionary.get(color), False
@@ -61,13 +61,13 @@ class Resistor(commands.Cog):
 
         def humanReadable(num):
             """
-			humanReadble(num as Integer)
+            humanReadble(num as Integer)
 
-			returns finalValue as String
+            returns finalValue as String
 
-			Takes a value and returns a human readble, 1K, 1M, 1G, etc to output
-			to the user.
-			"""
+            Takes a value and returns a human readble, 1K, 1M, 1G, etc to output
+            to the user.
+            """
             # Check the value of the resistor and reduce it to a human readable number.
             if num >= 1000000000:  # Giga Ohm
                 finalValue = num / 1000000000
@@ -418,25 +418,18 @@ class Resistor(commands.Cog):
         if invalidResult:  # Uh oh, the user didn't give us valid input.
 
             # Embed a help guide
-            embed = discord.Embed(
-                title="Resistor Calculator", description="Values that I can understand"
-            )
-            embed.set_thumbnail(
-                url="http://educ8s.tv/wp-content/uploads/2014"
-                "/11/Resistor-Icon-147x118.png"
-            )
+            embed = discord.Embed(title="Resistor Calculator", description="Values that I can understand")
+            embed.set_thumbnail(url="http://educ8s.tv/wp-content/uploads/2014" "/11/Resistor-Icon-147x118.png")
 
             embed.add_field(
                 name="Significant figures",
-                value="black, brown, red,"
-                "orange, yellow, green, blue, violet, grey, white",
+                value="black, brown, red," "orange, yellow, green, blue, violet, grey, white",
                 inline=True,
             )
 
             embed.add_field(
                 name="Multiplier",
-                value="black, brown, red, orange, "
-                "yellow, green, blue, violet, grey, white",
+                value="black, brown, red, orange, " "yellow, green, blue, violet, grey, white",
                 inline=True,
             )
 
@@ -466,8 +459,8 @@ class Resistor(commands.Cog):
 
 def setup(client):
     """
-	Resistor class setup
-	"""
+    Resistor class setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Resistor(client))
     logger.info(f"Loaded {__name__}")

@@ -60,18 +60,12 @@ class FunStuff(commands.Cog):
         # Establish a wait time between sending the same message
         wait_time = datetime.timedelta(minutes=5)
 
-        if ("snow" in msg) and (
-            message.guild.id == 425699298957852672
-            or message.guild.id == 378302095633154050
-        ):
+        if ("snow" in msg) and (message.guild.id == 425699298957852672 or message.guild.id == 378302095633154050):
             # 425699298957852672 - HardwareFlare
             # 378302095633154050 - MyServer
             # 220348421259657218 - Runeadair
 
-            if (
-                self.last_run.get("snow", datetime.datetime.min) + wait_time
-                <= datetime.datetime.now()
-            ):
+            if self.last_run.get("snow", datetime.datetime.min) + wait_time <= datetime.datetime.now():
                 phrases = [
                     "<@220348421259657218> https://tenor.com/37es.gif ",
                     f"<@220348421259657218>, {message.author.mention} is using evil 4 letter words!!!",
@@ -98,12 +92,8 @@ class FunStuff(commands.Cog):
         elif "thank you bot" in msg:
             await message.channel.send(f"You're welcome {message.author}")
 
-        elif (
-            "(╯°□°）╯︵ ┻━┻" == message.content
-        ):  # Doesn't use the processed msg variable because of needed punctuation.
-            await message.channel.send(
-                f"┬─┬ ノ( ゜-゜ノ) - Here let me put that back for you."
-            )
+        elif "(╯°□°）╯︵ ┻━┻" == message.content:  # Doesn't use the processed msg variable because of needed punctuation.
+            await message.channel.send(f"┬─┬ ノ( ゜-゜ノ) - Here let me put that back for you.")
 
         elif "thats what she said" in msg:
             phrases = [
@@ -114,38 +104,22 @@ class FunStuff(commands.Cog):
             rand_phrase = random.choice(phrases)
             await message.channel.send(rand_phrase)
 
-        elif (
-            "has the box shipped" in msg or "wheres the box" in msg
-        ) and message.channel.id == 426451859440664576:
-            if (
-                self.last_run.get("box_shipped", datetime.datetime.min) + wait_time
-                <= datetime.datetime.now()
-            ):
+        elif ("has the box shipped" in msg or "wheres the box" in msg) and message.channel.id == 426451859440664576:
+            if self.last_run.get("box_shipped", datetime.datetime.min) + wait_time <= datetime.datetime.now():
 
                 await message.channel.send(f"http://www.hasthejunkerboxmoved.com")
                 self.last_run["box_shipped"] = datetime.datetime.now()
             else:
-                cooldown = (
-                    self.last_run["box_shipped"] + wait_time
-                ) - datetime.datetime.now()
-                logger.info(
-                    f"Has the box shipped is on cooldown for another {cooldown}."
-                )
+                cooldown = (self.last_run["box_shipped"] + wait_time) - datetime.datetime.now()
+                logger.info(f"Has the box shipped is on cooldown for another {cooldown}.")
                 await message.add_reaction("⏳")
 
         elif ("moving on") in msg:
-            if (
-                self.last_run.get("moving_on", datetime.datetime.min) + wait_time
-                <= datetime.datetime.now()
-            ):
-                await message.channel.send(
-                    "https://clips.twitch.tv/PoliteLaconicCrabKappaPride"
-                )
+            if self.last_run.get("moving_on", datetime.datetime.min) + wait_time <= datetime.datetime.now():
+                await message.channel.send("https://clips.twitch.tv/PoliteLaconicCrabKappaPride")
                 self.last_run["moving_on"] = datetime.datetime.now()
             else:
-                cooldown = (
-                    self.last_run["moving_on"] + wait_time
-                ) - datetime.datetime.now()
+                cooldown = (self.last_run["moving_on"] + wait_time) - datetime.datetime.now()
                 logger.info(f"Moving on is on cooldown for another {cooldown}.")
                 await message.add_reaction("⏳")
 
@@ -154,9 +128,7 @@ class FunStuff(commands.Cog):
             504084460954845194,
             600768675645227037,
         ]:
-            await message.channel.send(
-                file=discord.File("images/baldengineer_facepalm.png")
-            )
+            await message.channel.send(file=discord.File("images/baldengineer_facepalm.png"))
 
         elif msg in ["🙀", "😱"]:  # :scream_cat: or :scream:
             await message.channel.send(file=discord.File("images/peachcatboo.gif"))
@@ -174,19 +146,9 @@ class FunStuff(commands.Cog):
         elif ":facedesk:" in message.content.lower():
             await message.channel.send("https://tenor.com/yWTN.gif")
 
-        elif (
-            (msg.upper() == msg_no_lower)
-            and (not message.author.bot)
-            and (len(msg) > 4)
-            and (not msg.isnumeric())
-        ):
-            if (
-                self.last_run.get("yelling", datetime.datetime.min) + wait_time
-                <= datetime.datetime.now()
-            ):
-                msg = await message.channel.send(
-                    f"WHY ARE WE YELLING {message.author.mention}?"
-                )
+        elif (msg.upper() == msg_no_lower) and (not message.author.bot) and (len(msg) > 4) and (not msg.isnumeric()):
+            if self.last_run.get("yelling", datetime.datetime.min) + wait_time <= datetime.datetime.now():
+                msg = await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
                 self.last_run["yelling"] = datetime.datetime.now()
                 await asyncio.sleep(8)
                 await msg.delete()
@@ -212,7 +174,7 @@ class FunStuff(commands.Cog):
     async def shrug(self, ctx):
         r"""
         ¯\_(ツ)_/¯
-		"""
+        """
         await ctx.send(r" ¯\_(ツ)_/¯ ")
 
     @commands.command(hidden=True)
@@ -224,9 +186,7 @@ class FunStuff(commands.Cog):
     @commands.command(hidden=True)
     @Permissions.check(role="everyone")
     async def mathishard(self, ctx):
-        await ctx.send(
-            "I agree. https://www.twitch.tv/baldengineer/clip/PatientDeliciousCockroachNononoCat"
-        )
+        await ctx.send("I agree. https://www.twitch.tv/baldengineer/clip/PatientDeliciousCockroachNononoCat")
 
     @commands.command(hidden=True)
     @Permissions.check(role="everyone")
@@ -236,9 +196,7 @@ class FunStuff(commands.Cog):
     @commands.command(hidden=True)
     @commands.is_owner()
     async def permissionscheck(self, ctx):
-        await ctx.send(
-            f"https://discordapi.com/permissions.html#{ctx.guild.me.guild_permissions.value}"
-        )
+        await ctx.send(f"https://discordapi.com/permissions.html#{ctx.guild.me.guild_permissions.value}")
 
     @commands.command(hidden=True)
     @Permissions.check()
@@ -302,8 +260,8 @@ class FunStuff(commands.Cog):
 
 def setup(client):
     """
-	Funstuff setup
-	"""
+    Funstuff setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(FunStuff(client))
     logger.info(f"Loaded {__name__}")

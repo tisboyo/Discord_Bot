@@ -49,10 +49,10 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def userannounce(self, ctx):
         """
-		Announce when members join or leave.
+        Announce when members join or leave.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # if subcommand was used.
             return
@@ -64,10 +64,10 @@ class JoinLeave(commands.Cog):
     @Permissions.check(role="everyone")
     async def userinfo(self, ctx):
         """
-		Displays a users info.
+        Displays a users info.
 
-		Default Permissions: Everyone role
-		"""
+        Default Permissions: Everyone role
+        """
 
         for member in ctx.message.mentions:
             await ctx.send(embed=self.build_embed(member))
@@ -77,27 +77,23 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def userannounce_channel(self, ctx, channel: discord.TextChannel):
         """
-		Sets Join and Leave notification channel.
+        Sets Join and Leave notification channel.
 
-		Usage: userannounce channel #ChannelName
+        Usage: userannounce channel #ChannelName
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Check to make sure the bot has read and send messages permissions
         if not await self.channel_permissions_check(ctx, channel):
             # Send a notification if the bot doesn't have permissions
-            await ctx.send(
-                "I do not have send and/or recieve permissions for that channel."
-            )
+            await ctx.send("I do not have send and/or recieve permissions for that channel.")
 
             # and quit..
             return
 
         # Save the channel
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "joinNotificationChannel"
-        ] = channel
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["joinNotificationChannel"] = channel
 
         Database.writeSettings(self, ctx.guild.id)
 
@@ -128,29 +124,23 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def disable(self, ctx):
         """
-		Disables notifiations.
+        Disables notifiations.
 
-		Usage: userannounce disable
+        Usage: userannounce disable
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Check if a channel is currently set, if not notify user and return
-        if not Database.Cogs[self.name][ctx.guild.id]["settings"].get(
-            "joinNotificationChannel", False
-        ):
+        if not Database.Cogs[self.name][ctx.guild.id]["settings"].get("joinNotificationChannel", False):
             await ctx.send("No notification channel was set.")
             return
 
         # Get the channel ID, establish handle to send message
-        notificationChannel = Utils.get_channel(
-            self, ctx.guild, "joinNotificationChannel"
-        )
+        notificationChannel = Utils.get_channel(self, ctx.guild, "joinNotificationChannel")
 
         # Remove guild entry from dictionary
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "joinNotificationChannel"
-        ] = None
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["joinNotificationChannel"] = None
 
         # Write the settings to the database
         Database.writeSettings(self, ctx.guild.id)
@@ -158,26 +148,24 @@ class JoinLeave(commands.Cog):
         # Check to make sure the bot has read and send messages permissions
         if await self.channel_permissions_check(ctx, notificationChannel):
             # Send notification to original channel if permissions are there.
-            await notificationChannel.send(
-                f"Join and leave notifications have been disabled for this channel."
-            )
+            await notificationChannel.send(f"Join and leave notifications have been disabled for this channel.")
 
     @userannounce.group()
     @commands.guild_only()
     @Permissions.check()
     async def age_notify(self, ctx):
         """
-		Settings to notify on specified account age.
+        Settings to notify on specified account age.
 
-		Usage:
-			age 1 (Specify number of days for account age to be notified)
-			channel #channelname (Specify the channel to send the message in)
-			message Your custom message here for the notification channel
-			disable (Disables the notifications)
-			status (Shows the current settings)
+        Usage:
+                age 1 (Specify number of days for account age to be notified)
+                channel #channelname (Specify the channel to send the message in)
+                message Your custom message here for the notification channel
+                disable (Disables the notifications)
+                status (Shows the current settings)
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # if subcommand was used.
@@ -190,10 +178,10 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def age_status(self, ctx):
         """
-		Displays the current status of the account age notifications
+        Displays the current status of the account age notifications
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         await self.send_age_check_reminders(ctx)
 
@@ -201,48 +189,43 @@ class JoinLeave(commands.Cog):
     @commands.guild_only()
     @Permissions.check()
     async def age_disable(
-        self, ctx,
+        self,
+        ctx,
     ):
         """
-		Disables the age check notifications.
+        Disables the age check notifications.
 
-		Usage: userannounce age_notify Disables
+        Usage: userannounce age_notify Disables
 
-		To restore set a new age.
+        To restore set a new age.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "notifyAccountAgeDays"
-        ] = None
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["notifyAccountAgeDays"] = None
 
         Database.writeSettings(self, ctx.guild.id)
 
-        await ctx.send(
-            "Account age notifications disabled. Set an account age to re-enable."
-        )
+        await ctx.send("Account age notifications disabled. Set an account age to re-enable.")
 
     @age_notify.command()
     @commands.guild_only()
     @Permissions.check()
     async def age(self, ctx, days):
         """
-		Sets how old an account has to be before the bot automatically notifies.
+        Sets how old an account has to be before the bot automatically notifies.
 
-		Usage: userannounce age_notify age 1
+        Usage: userannounce age_notify age 1
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         if not days.isnumeric():
             # If a number was not passed, throw an error.
             await ctx.send("Invalid input. You must use only a whole number of days.")
             return
 
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "notifyAccountAgeDays"
-        ] = days
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["notifyAccountAgeDays"] = days
 
         Database.writeSettings(self, ctx.guild.id)
 
@@ -254,20 +237,18 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def age_channel(self, ctx, channel: discord.TextChannel):
         """
-		Sets the channel to send the notification to
+        Sets the channel to send the notification to
 
-		Usage: userannounce age_notify channel #channelname
+        Usage: userannounce age_notify channel #channelname
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         if not await self.channel_permissions_check(ctx, channel):
             await ctx.send("I do not have permission to send messages in that channel.")
             return
 
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "notifyAccountAgeChannel"
-        ] = channel
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["notifyAccountAgeChannel"] = channel
 
         Database.writeSettings(self, ctx.guild.id)
 
@@ -298,17 +279,15 @@ class JoinLeave(commands.Cog):
     @Permissions.check()
     async def message(self, ctx, *, message):
         """
-		Sets the message to precede the embed of user information.
+        Sets the message to precede the embed of user information.
 
-		This is useful for pinging you or your moderation team.
+        This is useful for pinging you or your moderation team.
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Save the message to the datebase
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "notifyAccountAgeMessage"
-        ] = message
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["notifyAccountAgeMessage"] = message
 
         # Set here so new message would be included, quick access to settings
         settings = Database.Cogs[self.name][ctx.guild.id]["settings"]
@@ -321,8 +300,8 @@ class JoinLeave(commands.Cog):
 
     async def send_age_check_reminders(self, ctx):
         """
-		Checks to ensure all of the age check settings are set, and sends a reminder if not.
-		"""
+        Checks to ensure all of the age check settings are set, and sends a reminder if not.
+        """
 
         settings = Database.Cogs[self.name][ctx.guild.id]["settings"]
         message = ""
@@ -333,11 +312,15 @@ class JoinLeave(commands.Cog):
             good = False
 
         if not settings.get("notifyAccountAgeChannel", False):
-            message += f"Reminder: You need to run `{Database.Main[ctx.guild.id]['prefix']}userannounce age_notify channel` \n"
+            message += (
+                f"Reminder: You need to run `{Database.Main[ctx.guild.id]['prefix']}userannounce age_notify channel` \n"
+            )
             good = False
 
         if not settings.get("notifyAccountAgeMessage", False):
-            message += f"Reminder: You need to run `{Database.Main[ctx.guild.id]['prefix']}userannounce age_notify message` \n"
+            message += (
+                f"Reminder: You need to run `{Database.Main[ctx.guild.id]['prefix']}userannounce age_notify message` \n"
+            )
             good = False
 
         if good == True:
@@ -368,40 +351,26 @@ class JoinLeave(commands.Cog):
         Database.readSettingsGuild(self, member.guild.id)
 
         # Check to make sure a channel is set
-        if Database.Cogs[self.name][member.guild.id]["settings"].get(
-            "joinNotificationChannel", False
-        ):
+        if Database.Cogs[self.name][member.guild.id]["settings"].get("joinNotificationChannel", False):
 
             # Set a handle for the notification channel
-            notificationChannel = Utils.get_channel(
-                self, member.guild, "joinNotificationChannel"
-            )
+            notificationChannel = Utils.get_channel(self, member.guild, "joinNotificationChannel")
 
             output = f"A user has joined {guild} \n"
 
         if (
-            Database.Cogs[self.name][member.guild.id]["settings"].get(
-                "notifyAccountAgeChannel", False
-            )
-            and Database.Cogs[self.name][member.guild.id]["settings"].get(
-                "notifyAccountAgeMessage", False
-            )
-            and Database.Cogs[self.name][member.guild.id]["settings"].get(
-                "notifyAccountAgeDays", False
-            )
+            Database.Cogs[self.name][member.guild.id]["settings"].get("notifyAccountAgeChannel", False)
+            and Database.Cogs[self.name][member.guild.id]["settings"].get("notifyAccountAgeMessage", False)
+            and Database.Cogs[self.name][member.guild.id]["settings"].get("notifyAccountAgeDays", False)
         ):
 
             # Grab settings for quick use
             settings = Database.Cogs[self.name][member.guild.id]["settings"]
 
-            if not (member.joined_at - member.created_at) > datetime.timedelta(
-                days=int(settings["notifyAccountAgeDays"])
-            ):
+            if not (member.joined_at - member.created_at) > datetime.timedelta(days=int(settings["notifyAccountAgeDays"])):
                 # Account is not older than our specified number of days
                 # Set the channel so the message will send.
-                ageNotificationChannel = Utils.get_channel(
-                    self, member.guild, "notifyAccountAgeChannel"
-                )
+                ageNotificationChannel = Utils.get_channel(self, member.guild, "notifyAccountAgeChannel")
 
         if notificationChannel == ageNotificationChannel:
             # If both are set to the same channel, only send one message.
@@ -416,30 +385,22 @@ class JoinLeave(commands.Cog):
             # Send to notification channel after permissions check
             if Database.Cogs[self.name][member.guild.id]["settings"].get(
                 "joinNotificationChannel", False
-            ) and await self.channel_permissions_check(
-                member, notificationChannel, True
-            ):
+            ) and await self.channel_permissions_check(member, notificationChannel, True):
 
                 await notificationChannel.send(output, embed=self.build_embed(member))
 
             # Send to age notification channel after permissions check
             if Database.Cogs[self.name][member.guild.id]["settings"].get(
                 "notifyAccountAgeChannel", False
-            ) and await self.channel_permissions_check(
-                member, ageNotificationChannel, True
-            ):
+            ) and await self.channel_permissions_check(member, ageNotificationChannel, True):
 
-                await ageNotificationChannel.send(
-                    settings["notifyAccountAgeMessage"], embed=self.build_embed(member)
-                )
+                await ageNotificationChannel.send(settings["notifyAccountAgeMessage"], embed=self.build_embed(member))
 
-    async def channel_permissions_check(
-        self, ctx, channel: discord.TextChannel, notifyOwner: bool = False
-    ):
+    async def channel_permissions_check(self, ctx, channel: discord.TextChannel, notifyOwner: bool = False):
         """
-		Checks the permissions to send and read messages for specificed channel.
-		Sending either ctx or member object is supported.
-		"""
+        Checks the permissions to send and read messages for specificed channel.
+        Sending either ctx or member object is supported.
+        """
 
         if not hasattr(channel, "permissions_for"):
             # This isn't a valid channel object.
@@ -479,15 +440,11 @@ class JoinLeave(commands.Cog):
         Database.readSettingsGuild(self, member.guild.id)
 
         # Check to make sure a channel is set, if it's not return
-        if not Database.Cogs[self.name][member.guild.id]["settings"].get(
-            "joinNotificationChannel", False
-        ):
+        if not Database.Cogs[self.name][member.guild.id]["settings"].get("joinNotificationChannel", False):
             return
 
         # Set a handle for the notification channel
-        notificationChannel = Utils.get_channel(
-            self, member.guild, "joinNotificationChannel"
-        )
+        notificationChannel = Utils.get_channel(self, member.guild, "joinNotificationChannel")
 
         # Check to make sure the bot has read and send messages permissions
         if await self.channel_permissions_check(member, notificationChannel, True):
@@ -515,20 +472,13 @@ class JoinLeave(commands.Cog):
             value=f"{member.created_at.strftime(time_format)} on {member.created_at.strftime(date_format)}",
         )
         embed.add_field(name="Account Age", value=f"{self.build_account_age(member)}")
-        embed.add_field(
-            name="Member for", value=f"{self.build_server_member_for(member)}"
-        )
-        if (
-            Database.Cogs.get("levels", False)
-            and Database.Cogs["levels"][member.guild.id]["settings"]["enabled"]
-        ):
+        embed.add_field(name="Member for", value=f"{self.build_server_member_for(member)}")
+        if Database.Cogs.get("levels", False) and Database.Cogs["levels"][member.guild.id]["settings"]["enabled"]:
             # database query
             cursor = Database.cursor[member.guild.id]
             query = "SELECT nickname_history FROM users WHERE user_id = ?"
             values = (member.id,)
-            query_result = Database.dbExecute(
-                self, cursor, member.guild.id, query, values
-            )
+            query_result = Database.dbExecute(self, cursor, member.guild.id, query, values)
 
             if query_result is not None:
                 if query_result[0] is not None:
@@ -541,9 +491,7 @@ class JoinLeave(commands.Cog):
                         # Build the list
                         nickname_history = ", ".join(nickname_history)
 
-                        embed.add_field(
-                            name="Previous Nicknames", value=f"{nickname_history}"
-                        )
+                        embed.add_field(name="Previous Nicknames", value=f"{nickname_history}")
 
         return embed
 
@@ -572,8 +520,8 @@ class JoinLeave(commands.Cog):
 
 def setup(client):
     """
-	Join/leave notifications cog
-	"""
+    Join/leave notifications cog
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(JoinLeave(client))
     logger.info(f"Loaded {__name__}")

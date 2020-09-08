@@ -48,9 +48,7 @@ class MQTT(commands.Cog):
     async def publish_member_count(self, guild_id, count):
         # If a mqtt server is set, push the message to the mqtt server
         if self.mqtt_server:
-            async with mqttClient(
-                self.mqtt_server, port=1883, client_id="Boyo_Bot"
-            ) as client:
+            async with mqttClient(self.mqtt_server, port=1883, client_id="Boyo_Bot") as client:
                 await client.publish(f"discord/{guild_id}/member_count", f"{count}")
 
     @commands.Cog.listener()
@@ -68,8 +66,8 @@ class MQTT(commands.Cog):
 
 def setup(client):
     """
-	MQTT setup
-	"""
+    MQTT setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(MQTT(client))
     logger.info(f"Loaded {__name__}")

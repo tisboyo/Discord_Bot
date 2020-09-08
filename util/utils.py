@@ -61,9 +61,7 @@ class Utils(commands.Cog):
             channel_instance = self.client.get_channel(int(channel))
 
             # Save the handle for later
-            Database.Cogs[self.name][guild_id]["settings"][
-                channel_name
-            ] = channel_instance
+            Database.Cogs[self.name][guild_id]["settings"][channel_name] = channel_instance
 
             logger.info(f"Returning new channel object {channel_name}")
             return channel_instance

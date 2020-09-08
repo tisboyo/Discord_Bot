@@ -29,16 +29,14 @@ class Prefix(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @Permissions.check()
-    async def changeprefix(
-        self, ctx, prefix: commands.clean_content(escape_markdown=True)
-    ):
+    async def changeprefix(self, ctx, prefix: commands.clean_content(escape_markdown=True)):
         """
-		Used to change the prefix for this guild.
+        Used to change the prefix for this guild.
 
-		Usage: changeprefix (new prefix)
+        Usage: changeprefix (new prefix)
 
-		Default Permissions: Guild Administrator only
-		"""
+        Default Permissions: Guild Administrator only
+        """
 
         # Set it to memory
         Database.Main[ctx.guild.id]["prefix"] = prefix
@@ -57,10 +55,10 @@ class Prefix(commands.Cog):
     @Permissions.check(role="everyone")
     async def prefix(self, ctx):
         """
-		Responds with the bot's prefix.
+        Responds with the bot's prefix.
 
-		Default Permissions: Everyone role
-		"""
+        Default Permissions: Everyone role
+        """
 
         prefix = Database.Main[ctx.guild.id]["prefix"]
         await ctx.send(f"The current prefix is `{prefix}`")
@@ -76,8 +74,8 @@ class Prefix(commands.Cog):
 
 def setup(client):
     """
-	Change prefix setup
-	"""
+    Change prefix setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Prefix(client))
     logger.info(f"Loaded {__name__}")

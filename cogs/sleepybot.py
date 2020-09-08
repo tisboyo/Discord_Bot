@@ -18,13 +18,13 @@ logger = logging.getLogger(__name__)
 
 class Sleepybot(commands.Cog):
     """
-	Sleepybot puts the bot to sleep, and sets it to offline.
+    Sleepybot puts the bot to sleep, and sets it to offline.
 
-	Add to each function that will sleep
-	#If the bot is sleeping, don't do anything.
-	if Database.Bot['sleeping']: return
+    Add to each function that will sleep
+    #If the bot is sleeping, don't do anything.
+    if Database.Bot['sleeping']: return
 
-	"""
+    """
 
     def __init__(self, client):
         self.client = client
@@ -61,8 +61,8 @@ class Sleepybot(commands.Cog):
 
 def setup(client):
     """
-	Sleepybot setup
-	"""
+    Sleepybot setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Sleepybot(client))
     logger.info(f"Loaded {__name__}")

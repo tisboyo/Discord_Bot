@@ -30,13 +30,8 @@ class Highlight(commands.Cog):
             # Create a dictionary for tracking cooldowns
             Database.Cogs[self.name][guild_id]["cooldown"] = dict()
 
-            if (
-                "highlight_channel"
-                not in Database.Cogs[self.name][guild_id]["settings"].keys()
-            ):
-                Database.Cogs[self.name][guild_id]["settings"][
-                    "highlight_channel"
-                ] = None
+            if "highlight_channel" not in Database.Cogs[self.name][guild_id]["settings"].keys():
+                Database.Cogs[self.name][guild_id]["settings"]["highlight_channel"] = None
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
@@ -58,31 +53,25 @@ class Highlight(commands.Cog):
     @Permissions.check(role="everyone")
     async def highlight(self, ctx):
         """
-		Use to highlight content to a specific channel.
+        Use to highlight content to a specific channel.
 
-		Default Permissions: Everyone role
-		"""
+        Default Permissions: Everyone role
+        """
 
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # if subcommand was used.
             return
 
         # Check if channel is set
-        if not Database.Cogs[self.name][ctx.guild.id]["settings"].get(
-            "highlight_channel", False
-        ):
-            await ctx.send(
-                "Channel is not set for highlight, please ask an administrator to set one."
-            )
+        if not Database.Cogs[self.name][ctx.guild.id]["settings"].get("highlight_channel", False):
+            await ctx.send("Channel is not set for highlight, please ask an administrator to set one.")
             return
 
         # Assign the text channel to a variable for use
         channel = Utils.get_channel(self, ctx.guild, "highlight_channel")
 
         # Check when the user last sent something to the highlight channel
-        user_cooldown = Database.Cogs[self.name][ctx.guild.id]["cooldown"].get(
-            ctx.message.author.id, 0
-        )
+        user_cooldown = Database.Cogs[self.name][ctx.guild.id]["cooldown"].get(ctx.message.author.id, 0)
         if int(user_cooldown + channel.slowmode_delay - 1) > int(time.time()):
             # Calculate the time left of the users cooldown, and inform the user
             cooldown_left = int((user_cooldown + channel.slowmode_delay) - time.time())
@@ -102,16 +91,12 @@ class Highlight(commands.Cog):
             await asyncio.sleep(0.25)
 
         # Update the users cooldown
-        Database.Cogs[self.name][ctx.guild.id]["cooldown"][ctx.message.author.id] = int(
-            time.time()
-        )
+        Database.Cogs[self.name][ctx.guild.id]["cooldown"][ctx.message.author.id] = int(time.time())
 
         # Find the length of the command prefix, plus command name and a space to strip out later
         drop_len = len(ctx.prefix) + 9 + 1
 
-        message = (
-            f"{ctx.author.mention} has shared {ctx.message.clean_content[drop_len:]}"
-        )
+        message = f"{ctx.author.mention} has shared {ctx.message.clean_content[drop_len:]}"
         await channel.send(message)
         await ctx.message.add_reaction(Dictionary.check_box)
 
@@ -120,15 +105,13 @@ class Highlight(commands.Cog):
     @Permissions.check(permission=["manage_channels"])
     async def channel(self, ctx, channel: discord.TextChannel):
         """
-		Sets a channel for the higlight command.
+        Sets a channel for the higlight command.
 
-		Default Permissions: manage_channels permission
-		"""
+        Default Permissions: manage_channels permission
+        """
 
         # Save the channel to memory
-        Database.Cogs[self.name][ctx.guild.id]["settings"][
-            "highlight_channel"
-        ] = channel
+        Database.Cogs[self.name][ctx.guild.id]["settings"]["highlight_channel"] = channel
 
         # Write the settings to the database
         Database.writeSettings(self, ctx.guild.id)
@@ -140,12 +123,12 @@ class Highlight(commands.Cog):
     @Permissions.check(permission=["manage_channels"])
     async def disable(self, ctx):
         """
-		Removes the set channel for the highlight command.
+        Removes the set channel for the highlight command.
 
-		Running this will disable use of the highlight command.
+        Running this will disable use of the highlight command.
 
-		Default Permissions: manage_channels permission
-		"""
+        Default Permissions: manage_channels permission
+        """
 
         # Remove the channel from memory
         Database.Cogs[self.name][ctx.guild.id]["settings"]["highlight_channel"] = None
@@ -158,9 +141,9 @@ class Highlight(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """
-		Used to keep track of the last time a user posted a message in the highlights channel
-		to honor the cooldown
-		"""
+        Used to keep track of the last time a user posted a message in the highlights channel
+        to honor the cooldown
+        """
 
         # Get the highlight channel to use in the Guard Clause
         channel = Utils.get_channel(self, message.guild, "highlight_channel")
@@ -179,9 +162,7 @@ class Highlight(commands.Cog):
             return  # Abort abort!
 
         # Update the users cooldown if they posted directly to the highlights channel
-        Database.Cogs[self.name][message.guild.id]["cooldown"][message.author.id] = int(
-            time.time()
-        )
+        Database.Cogs[self.name][message.guild.id]["cooldown"][message.author.id] = int(time.time())
 
     @highlight.error
     @channel.error
@@ -195,8 +176,8 @@ class Highlight(commands.Cog):
 
 def setup(client):
     """
-	Highlight setup
-	"""
+    Highlight setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Highlight(client))
     logger.info(f"Loaded {__name__}")

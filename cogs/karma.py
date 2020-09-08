@@ -46,8 +46,8 @@ class Karma(commands.Cog):
     @commands.guild_only()
     async def on_raw_reaction_add(self, payload):
         """
-		Check for Upvote and Downvote reaction
-		"""
+        Check for Upvote and Downvote reaction
+        """
 
         # Who did the vote
         voter = self.client.get_user(payload.user_id)
@@ -71,17 +71,13 @@ class Karma(commands.Cog):
             return
 
         if str(payload.emoji) == settings.get("upvote", False):
-            logger.info(
-                f"{channel.guild}-#{channel.name} - {voter.name} upvoted {message.author.name}"
-            )
+            logger.info(f"{channel.guild}-#{channel.name} - {voter.name} upvoted {message.author.name}")
             current_karma = self.get_current_karma(payload.guild_id, message.author.id)
             new_karma = [current_karma[0] + 1, current_karma[1]]
             self.set_new_karma(payload.guild_id, message.author.id, new_karma)
 
         elif str(payload.emoji) == settings.get("downvote", False):
-            logger.info(
-                f"{channel.guild}-#{channel.name} - {voter.name} downvoted {message.author.name}"
-            )
+            logger.info(f"{channel.guild}-#{channel.name} - {voter.name} downvoted {message.author.name}")
             current_karma = self.get_current_karma(payload.guild_id, message.author.id)
             new_karma = [current_karma[0], current_karma[1] + 1]
             self.set_new_karma(payload.guild_id, message.author.id, new_karma)
@@ -94,8 +90,8 @@ class Karma(commands.Cog):
     @commands.guild_only()
     async def on_raw_reaction_remove(self, payload):
         """
-		Check for removal of Upvote and Downvote reaction
-		"""
+        Check for removal of Upvote and Downvote reaction
+        """
 
         # Who did the vote
         voter = self.client.get_user(payload.user_id)
@@ -119,17 +115,13 @@ class Karma(commands.Cog):
             return
 
         if str(payload.emoji) == settings.get("upvote", False):
-            logger.info(
-                f"{channel.guild}-#{channel.name} - {voter.name} removed their upvote for {message.author.name}"
-            )
+            logger.info(f"{channel.guild}-#{channel.name} - {voter.name} removed their upvote for {message.author.name}")
             current_karma = self.get_current_karma(payload.guild_id, message.author.id)
             new_karma = [current_karma[0] - 1, current_karma[1]]
             self.set_new_karma(payload.guild_id, message.author.id, new_karma)
 
         elif str(payload.emoji) == settings.get("downvote", False):
-            logger.info(
-                f"{channel.guild}-#{channel.name} - {voter.name} removed their downvote for {message.author.name}"
-            )
+            logger.info(f"{channel.guild}-#{channel.name} - {voter.name} removed their downvote for {message.author.name}")
             current_karma = self.get_current_karma(payload.guild_id, message.author.id)
             new_karma = [current_karma[0], current_karma[1] - 1]
             self.set_new_karma(payload.guild_id, message.author.id, new_karma)
@@ -139,8 +131,8 @@ class Karma(commands.Cog):
 
     def get_current_karma(self, guild_id: int, user_id: int):
         """
-		Returns the message owners current upvotes and downvotes
-		"""
+        Returns the message owners current upvotes and downvotes
+        """
 
         # Setup variables if they are new
         # We are storing the karma this way so in the future a global karma is accessible
@@ -164,10 +156,10 @@ class Karma(commands.Cog):
 
     def set_new_karma(self, guild_id: int, user_id: int, karma: list):
         """
-		Sets the new Karma for a user
+        Sets the new Karma for a user
 
-		karma is a list of [ int(upvote_value), int(downvote_value) ]
-		"""
+        karma is a list of [ int(upvote_value), int(downvote_value) ]
+        """
 
         # Setup variables if they are new
         # We are storing the karma this way so in the future a global karma is accessible
@@ -201,21 +193,17 @@ class Karma(commands.Cog):
     @Permissions.check(role="everyone")
     async def karma(self, ctx):
         """
-		Commands to set or show Karma upvote and downvote emojis
+        Commands to set or show Karma upvote and downvote emojis
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # A subcommand was used.
             return
 
         # Build and send a message of current settings
-        upvote = Database.Cogs[self.name][ctx.guild.id]["settings"].get(
-            "upvote", "None"
-        )
-        downvote = Database.Cogs[self.name][ctx.guild.id]["settings"].get(
-            "downvote", "None"
-        )
+        upvote = Database.Cogs[self.name][ctx.guild.id]["settings"].get("upvote", "None")
+        downvote = Database.Cogs[self.name][ctx.guild.id]["settings"].get("downvote", "None")
 
         message = f"Current Upvote: {upvote} \nCurrent Downvote: {downvote}"
         await ctx.send(message)
@@ -225,10 +213,10 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def upvote(self, ctx, emoji):
         """
-		Set the emoji to use as an Upvote
+        Set the emoji to use as an Upvote
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Guard Clause
         if False:  # Future use
@@ -248,10 +236,10 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def downvote(self, ctx, emoji):
         """
-		Set the emoji to use as a Downvote
+        Set the emoji to use as a Downvote
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Guard Clause
         if False:  # Future use
@@ -271,14 +259,14 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def disable(self, ctx):
         """
-		Disables Upvote and Downvote emojis
+        Disables Upvote and Downvote emojis
 
-		Usage: karma disable both (Disables both up and down votes.)
-			   karma disable upvote (Disables just the upvote emoji.)
-			   karma disable downvote (Disables just the downvote.)
+        Usage: karma disable both (Disables both up and down votes.)
+                   karma disable upvote (Disables just the upvote emoji.)
+                   karma disable downvote (Disables just the downvote.)
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Guard Clause
         if ctx.invoked_subcommand is not None:  # A subcommand was used.
@@ -292,10 +280,10 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def karma_disable_upvote(self, ctx):
         """
-		Disable the upvote emoji
+        Disable the upvote emoji
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Disable
         Database.Cogs[self.name][ctx.guild.id]["settings"]["upvote"] = None
@@ -311,10 +299,10 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def karma_disable_downvote(self, ctx):
         """
-		Disable the downvote emoji
+        Disable the downvote emoji
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Disable
         Database.Cogs[self.name][ctx.guild.id]["settings"]["downvote"] = None
@@ -330,10 +318,10 @@ class Karma(commands.Cog):
     @Permissions.check(permission=["manage_guild"])
     async def karma_disable_both(self, ctx):
         """
-		Disable both up and down vote emoji
+        Disable both up and down vote emoji
 
-		Default Permissions: Manage Guild permission
-		"""
+        Default Permissions: Manage Guild permission
+        """
 
         # Disable
         Database.Cogs[self.name][ctx.guild.id]["settings"]["upvote"] = None
@@ -347,8 +335,8 @@ class Karma(commands.Cog):
 
     async def check_emoji(self, ctx, emojiRaw):
         """
-		Checks if an emoji is valid or not
-		"""
+        Checks if an emoji is valid or not
+        """
         try:  # Check if it is a custom emoji.
             emoji = await commands.EmojiConverter().convert(ctx, emojiRaw)
             emoji = str(emoji)
@@ -363,9 +351,7 @@ class Karma(commands.Cog):
 
         except discord.HTTPException as e:
             if e.code == 10014:
-                await ctx.send(
-                    f"Sorry, but discord doesn't have that emoji in it's reaction library."
-                )
+                await ctx.send(f"Sorry, but discord doesn't have that emoji in it's reaction library.")
                 await Utils.send_failure(self, ctx.message)
                 # We don't want to try adding the bad emoji to the database, so returning.
                 return
@@ -396,8 +382,8 @@ class Karma(commands.Cog):
 
 def setup(client):
     """
-	Karma setup
-	"""
+    Karma setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Karma(client))
     logger.info(f"Loaded {__name__}")

@@ -22,9 +22,7 @@ import keys
 # from util.utils import Utils
 
 # Set logging level and format
-logging.basicConfig(
-    format="%(asctime)s %(levelname)s: %(name)s: %(message)s", level=keys.logging_level
-)
+logging.basicConfig(format="%(asctime)s %(levelname)s: %(name)s: %(message)s", level=keys.logging_level)
 logger = logging.getLogger(__name__)
 
 if os.environ.get("PTVSD_ENABLE", False):
@@ -43,15 +41,11 @@ Token = keys.discord["token"]
 def get_prefix(client, message):
     """Function used to return the server prefix"""
     # Check if we are in a DM. If so, use default prefix.
-    if isinstance(message.channel, discord.DMChannel) or isinstance(
-        message.channel, discord.GroupChannel
-    ):
+    if isinstance(message.channel, discord.DMChannel) or isinstance(message.channel, discord.GroupChannel):
         prefix = "."
     else:
         # Check when the last time the database was queried for the prefix
-        last_prefix_check = Database.Main[message.guild.id].get(
-            "last_prefix_check", datetime.datetime.utcfromtimestamp(0)
-        )
+        last_prefix_check = Database.Main[message.guild.id].get("last_prefix_check", datetime.datetime.utcfromtimestamp(0))
         now = datetime.datetime.utcnow()
         update_difference = datetime.timedelta(seconds=15)
         if now - last_prefix_check > update_difference:

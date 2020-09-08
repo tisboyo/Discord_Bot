@@ -49,8 +49,8 @@ class Template(commands.Cog):
     async def Template(self, ctx):
         """
 
-		Default Permissions:
-		"""
+        Default Permissions:
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
@@ -65,8 +65,8 @@ class Template(commands.Cog):
 
 def setup(client):
     """
-	Template setup
-	"""
+    Template setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Template(client))
     logger.info(f"Loaded {__name__}")

@@ -54,8 +54,8 @@ class Images(commands.Cog):
         """
         Returns a Random Cat from http://random.cat
 
-		Default Permissions: role="everyone"
-		"""
+                Default Permissions: role="everyone"
+        """
 
         async with ctx.channel.typing():
             async with aiohttp.ClientSession() as cs:
@@ -74,8 +74,8 @@ class Images(commands.Cog):
         """
         Returns a Random Dog from http://random.dog
 
-		Default Permissions: role="everyone"
-		"""
+                Default Permissions: role="everyone"
+        """
         async with ctx.channel.typing():
             async with aiohttp.ClientSession() as cs:
                 # Sometimes random.dog returns an mp4, which
@@ -94,9 +94,7 @@ class Images(commands.Cog):
                             # If we get too many mp4's just give up.
                             # this is to prevent hitting the server too much
                             if try_count >= 3:
-                                await ctx.send(
-                                    "Unable to get a valid image from random.dog. 😢"
-                                )
+                                await ctx.send("Unable to get a valid image from random.dog. 😢")
                                 return
 
                             asyncio.sleep(1)  # Lets not hammer the server
@@ -138,8 +136,8 @@ class Images(commands.Cog):
 
 def setup(client):
     """
-	Images setup
-	"""
+    Images setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Images(client))
     logger.info(f"Loaded {__name__}")

@@ -68,8 +68,8 @@ class Reddit(commands.Cog):
     @Permissions.check()
     async def reddit(self, ctx):
         """
-		Used for interacting with reddit. See help reddit
-		"""
+        Used for interacting with reddit. See help reddit
+        """
         # Guard Clause
         if False:  # Future use
             return
@@ -78,8 +78,8 @@ class Reddit(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def autolink(self, ctx):
         """
-		Toggles on and off autolinking of mentioned subreddits.
-		"""
+        Toggles on and off autolinking of mentioned subreddits.
+        """
         # Guard Clause
         if False:  # Future use
             return
@@ -100,8 +100,8 @@ class Reddit(commands.Cog):
 
 def setup(client):
     """
-	Reddit setup
-	"""
+    Reddit setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Reddit(client))
     logger.info(f"Loaded {__name__}")

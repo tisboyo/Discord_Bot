@@ -47,9 +47,7 @@ class Twitch(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         for guild_id in Database.Main:
-            settings = Database.Cogs[self.name][guild_id]["settings"].get(
-                "streamers", None
-            )
+            settings = Database.Cogs[self.name][guild_id]["settings"].get("streamers", None)
 
             Database.Cogs[self.name][guild_id]["streamers"] = dict()
             streamers = Database.Cogs[self.name][guild_id]["streamers"]
@@ -73,9 +71,7 @@ class Twitch(commands.Cog):
 
                     # Add to the guild list of streamers
                     # Stores an integer of the TextChannel ID
-                    Database.Cogs[self.name][guild_id]["streamers"][
-                        streamer
-                    ] = channel_id
+                    Database.Cogs[self.name][guild_id]["streamers"][streamer] = channel_id
 
         # Let the rest of the bot know we're ready.
         Twitch.ready = True
@@ -116,8 +112,8 @@ class Twitch(commands.Cog):
         """
         Add a twitch channel to watch
 
-		Default Permissions: Guild Administrator only
-		"""
+                Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
@@ -154,8 +150,8 @@ class Twitch(commands.Cog):
         """
         Remove twitch channel being watched
 
-		Default Permissions: Guild Administrator only
-		"""
+                Default Permissions: Guild Administrator only
+        """
         # Guard Clause
         if ctx.guild == None:  # Not in a guild means DM or Group chat.
             return
@@ -204,9 +200,7 @@ class Twitch(commands.Cog):
 
         db = Database.Cogs[self.name][ctx.guild.id]["streamers"]
 
-        embed = discord.Embed(
-            title="Streams the bot is Watching for and the Channel they post in."
-        )
+        embed = discord.Embed(title="Streams the bot is Watching for and the Channel they post in.")
         for streamer, channel in db.items():
             embed.add_field(name=f"{streamer}", value=f"<#{channel}>")
 
@@ -254,9 +248,7 @@ class Twitch(commands.Cog):
         users_params = {"login": list(Twitch.streamers.keys())}
 
         async with aiohttp.ClientSession() as cs:
-            async with cs.get(
-                users_url, params=users_params, headers=Twitch.headers
-            ) as r:
+            async with cs.get(users_url, params=users_params, headers=Twitch.headers) as r:
                 users_data = await r.json()
                 users_data = users_data["data"]
 
@@ -299,9 +291,7 @@ async def get_twitch_status():
         if len(Twitch.streamers) > 0:
             # Get the status
             async with aiohttp.ClientSession() as cs:
-                async with cs.get(
-                    streams_url, params=streams_params, headers=Twitch.headers
-                ) as r:
+                async with cs.get(streams_url, params=streams_params, headers=Twitch.headers) as r:
                     streams_data = await r.json()
                     streams_data = streams_data["data"]
 
@@ -322,21 +312,15 @@ async def get_twitch_status():
                         embed = discord.Embed(
                             title=f"{streamers['user_name']} is live!",
                             url=f"https://twitch.tv/{user_name}",
-                            timestamp=datetime.strptime(
-                                started_at, "%Y-%m-%dT%H:%M:%S%z"
-                            ),  # 2020-09-08T19:30:09Z
+                            timestamp=datetime.strptime(started_at, "%Y-%m-%dT%H:%M:%S%z"),  # 2020-09-08T19:30:09Z
                             color=discord.Color.green(),
                             type="rich",
                         )
-                        embed.set_image(
-                            url=streamers["thumbnail_url"].format(width=640, height=480)
-                        )
+                        embed.set_image(url=streamers["thumbnail_url"].format(width=640, height=480))
                         embed.set_thumbnail(url=Twitch.profile_picture[user_name])
                         embed.add_field(
                             name=streamers["user_name"],
-                            value=streamers["title"]
-                            if streamers["title"]
-                            else f"{streamers['user_name']} stream.",
+                            value=streamers["title"] if streamers["title"] else f"{streamers['user_name']} stream.",
                             inline=True,
                         )
                         embed.set_footer(text=f"Stream started")
@@ -347,9 +331,7 @@ async def get_twitch_status():
                         )
                         Twitch.streamers[user_name]["started_at"] = started_at
                 elif Twitch.streamers[user_name].get("started_at", None) == started_at:
-                    logger.debug(
-                        f"{streamers['user_name']} is live but already announced."
-                    )
+                    logger.debug(f"{streamers['user_name']} is live but already announced.")
 
             logger.debug("Twitch statuses retrieved")
 
@@ -364,8 +346,8 @@ async def get_twitch_status():
 
 def setup(client):
     """
-	Twitch setup
-	"""
+    Twitch setup
+    """
     logger.info(f"Loading {__name__}...")
     client.add_cog(Twitch(client))
     client.loop.create_task(get_twitch_status())
