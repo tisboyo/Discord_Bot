@@ -322,7 +322,9 @@ async def get_twitch_status():
                         embed = discord.Embed(
                             title=f"{streamers['user_name']} is live!",
                             url=f"https://twitch.tv/{user_name}",
-                            timestamp=datetime.now(tz=timezone.utc),
+                            timestamp=datetime.strptime(
+                                started_at, "%Y-%m-%dT%H:%M:%S%z"
+                            ),  # 2020-09-08T19:30:09Z
                             color=discord.Color.green(),
                             type="rich",
                         )
@@ -331,10 +333,14 @@ async def get_twitch_status():
                         )
                         embed.set_thumbnail(url=Twitch.profile_picture[user_name])
                         embed.add_field(
-                            name=f"{streamers['user_name']}",
-                            value=f"{streamers['title']}",
+                            name=streamers["user_name"],
+                            value=streamers["title"]
+                            if streamers["title"]
+                            else f"{streamers['user_name']} stream.",
                             inline=True,
                         )
+                        embed.set_footer(text=f"Stream started")
+
                         await channel.send(
                             f"{streamers['user_name']} is live on Twitch at https://twitch.tv/{user_name}",
                             embed=embed,
@@ -354,6 +360,7 @@ async def get_twitch_status():
 
     def cog_unload(self):
         logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """
