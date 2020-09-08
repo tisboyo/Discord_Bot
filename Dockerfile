@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.8
 
 # Set pip to have cleaner logs and no saved cache
 ENV PIP_NO_CACHE_DIR=false \
