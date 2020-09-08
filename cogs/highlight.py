@@ -189,6 +189,9 @@ class Highlight(commands.Cog):
     async def _error(self, ctx, error):
         await Utils.errors(self, ctx, error)
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """

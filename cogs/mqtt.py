@@ -62,6 +62,9 @@ class MQTT(commands.Cog):
         ):
             return
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """

@@ -39,6 +39,9 @@ class BanHammer(commands.Cog):
             channel: discord.TextChannel = self.client.get_channel(channels[guild.id])
             await channel.send(f"{member.name} banned.")
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """

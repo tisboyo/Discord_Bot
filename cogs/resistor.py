@@ -8,6 +8,7 @@ Discord Bot for HardwareFlare and others
 # pylint: disable=invalid-name
 
 import logging
+import string
 
 import discord
 from discord.ext import commands
@@ -458,6 +459,9 @@ class Resistor(commands.Cog):
             )
 
             await ctx.send(content=None, embed=embed)
+
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
 
 
 def setup(client):

@@ -352,6 +352,8 @@ async def get_twitch_status():
 
         await asyncio.sleep(300)  # 300 = 5 Minutes
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
 
 def setup(client):
     """

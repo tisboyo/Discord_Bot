@@ -55,6 +55,9 @@ class Sleepybot(commands.Cog):
 
         await ctx.send("Huh? What? Oh... I'm awake.")
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """

@@ -97,6 +97,9 @@ class lol(commands.Cog):
             ):
                 del Database.Cogs[self.name][message.guild.id][message.channel.id]
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """

@@ -94,6 +94,9 @@ class Reddit(commands.Cog):
             await ctx.send("Autolinking of subreddits has been enabled.")
         Database.writeSettings(self, ctx.guild.id)
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 def setup(client):
     """
