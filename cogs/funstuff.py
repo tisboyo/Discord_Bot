@@ -194,6 +194,11 @@ class FunStuff(commands.Cog):
         await ctx.send("https://clips.twitch.tv/PatientHumbleSproutKreygasm")
 
     @commands.command(hidden=True)
+    @Permissions.check(role="everyone")
+    async def ahole(self, ctx):
+        await ctx.send("https://clips.twitch.tv/PoorUninterestedSnailGOWSkull")
+
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def permissionscheck(self, ctx):
         await ctx.send(f"https://discordapi.com/permissions.html#{ctx.guild.me.guild_permissions.value}")
