@@ -78,8 +78,5 @@ cogs/test.py
 # Python virtual environment
 .venv
 
-# VSCode settings.json, keep other .vscode files
-.vscode/settings.json
-
 # Text To Speech temporary file
 voice-*.wav
