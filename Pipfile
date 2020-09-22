@@ -5,8 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 wheel = "*"
-pylint = "*"
-black = "*"
+flake8 = "*"
 ptvsd = "*"
 
 [packages]
@@ -20,6 +19,3 @@ asyncio-mqtt = "*"
 
 [requires]
 python_version = "3.8"
-
-[pipenv]
-allow_prereleases = true
