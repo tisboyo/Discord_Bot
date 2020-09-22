@@ -3,21 +3,22 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
-from datetime import datetime, timezone, timedelta
+import asyncio
 import json
+import logging
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
-import asyncio
-
-from util.database import Database
-from util.permissions import Permissions
-from util.utils import Utils, Dictionary
 
 from keys import twitch as twitch_settings
+from util.database import Database
+from util.permissions import Permissions
+from util.utils import Dictionary
+from util.utils import Utils
 
 logger = logging.getLogger(__name__)
 

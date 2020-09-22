@@ -3,7 +3,6 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 """
         #database query
         cursor = Database.cursor[ctx.guild.id]
@@ -12,21 +11,20 @@ Discord Bot for HardwareFlare and others
         Database.dbExecute(self, cursor, ctx.guild.id, query, values)
 
 """
-import sqlite3
-import os
 import datetime
-import traceback
-import logging
 import json
-
-# import discord
-from discord.ext import commands, tasks
-
-
-# run_backup function
+import logging
+import os
+import sqlite3
+import traceback
 from shutil import copyfile
+
 import aioftp
+from discord.ext import commands
+from discord.ext import tasks
+
 from keys import backup
+
 
 logger = logging.getLogger(__name__)
 

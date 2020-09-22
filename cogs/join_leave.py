@@ -3,20 +3,18 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
-
-# import sqlite3
 import datetime
 import json
+import logging
 
-import discord
 import discord.utils
 from discord.ext import commands
 
 from util.database import Database
-from util.utils import Utils
 from util.permissions import Permissions
+from util.utils import Utils
+
+# import sqlite3
 
 logger = logging.getLogger(__name__)
 

@@ -6,10 +6,9 @@ Discord Bot for HardwareFlare and others
 @author: Tisboyo
 
 """
-
+import datetime
 import logging
 import os
-import datetime
 from sys import version as python_version
 
 import discord

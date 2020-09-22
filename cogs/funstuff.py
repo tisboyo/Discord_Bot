@@ -3,15 +3,12 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
+import asyncio
+import datetime
 import logging
 import random
-import string
 import re
-import datetime
-import asyncio
-
-# import sqlite3
+import string
 
 import discord
 from discord.ext import commands
@@ -19,6 +16,8 @@ from discord.ext import commands
 from util.database import Database
 from util.permissions import Permissions
 from util.utils import Utils
+
+# import sqlite3
 
 logger = logging.getLogger(__name__)
 

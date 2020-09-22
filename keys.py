@@ -3,9 +3,9 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import logging
 import os
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env

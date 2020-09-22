@@ -3,7 +3,6 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import datetime
 import json
 import logging
@@ -13,8 +12,9 @@ import discord
 from discord.ext import commands
 
 from util.database import Database
-from util.utils import Utils, dotdict
 from util.permissions import Permissions
+from util.utils import dotdict
+from util.utils import Utils
 
 logger = logging.getLogger(__name__)
 

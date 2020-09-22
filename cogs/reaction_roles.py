@@ -3,11 +3,10 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
 import asyncio
-import time
+import logging
 import sqlite3
+import time
 
 import discord
 from discord.ext import commands
