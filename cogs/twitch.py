@@ -345,9 +345,15 @@ async def get_twitch_status():
 
             await asyncio.sleep(300)  # 300 = 5 Minutes
 
+        except aiohttp.client_exceptions.ClientConnectionError:
+            logger.warning("Twitch connection error.")
+            await asyncio.sleep(300)
+
         except Exception as e:
             logger.warning("Twitch loop exception!")
             logger.warning(e)
+            logger.warning(type(e))
+            await asyncio.sleep(300)
 
 
 def setup(client):
