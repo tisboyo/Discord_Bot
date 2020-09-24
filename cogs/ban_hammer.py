@@ -3,7 +3,6 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import logging
 
 import discord

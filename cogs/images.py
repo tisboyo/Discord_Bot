@@ -3,13 +3,12 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
+import asyncio
 import logging
 
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
-import asyncio
 
 from util.database import Database
 from util.permissions import Permissions

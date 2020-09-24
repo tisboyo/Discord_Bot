@@ -3,18 +3,16 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
 import asyncio
 import datetime
-from collections import namedtuple
-from gtts import gTTS
-from tempfile import gettempdir
+import logging
 import os
-
+from collections import namedtuple
+from tempfile import gettempdir
 
 import discord
 from discord.ext import commands
+from gtts import gTTS
 
 from util.database import Database
 from util.permissions import Permissions

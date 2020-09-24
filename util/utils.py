@@ -3,9 +3,8 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
 import datetime
+import logging
 import traceback
 
 import discord

@@ -3,10 +3,8 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 # Disables snake_case warning in pylint
 # pylint: disable=invalid-name
-
 import logging
 import string
 

@@ -3,17 +3,17 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
 import asyncio
+import logging
 import time
 
 import discord
 from discord.ext import commands
 
 from util.database import Database
-from util.utils import Utils, Dictionary
 from util.permissions import Permissions
+from util.utils import Dictionary
+from util.utils import Utils
 
 logger = logging.getLogger(__name__)
 

@@ -3,22 +3,19 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import logging
+from os import getenv
 
 import discord
-from discord.ext import commands
-
-# import paho.mqtt.publish as mqtt_publish
 from asyncio_mqtt import Client as mqttClient
-
-# from datetime import datetime
+from discord.ext import commands
 
 from util.database import Database
 from util.permissions import Permissions
 from util.utils import Utils
 
-from os import getenv
+# import paho.mqtt.publish as mqtt_publish
+# from datetime import datetime
 
 logger = logging.getLogger(__name__)
 

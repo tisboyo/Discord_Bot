@@ -4,9 +4,7 @@ Created on Wed Nov 13 16:49:05 2019
 
 @author: Boyo
 """
-
 # Test file for doing manual database queries
-
 import sqlite3
 
 filename = "./378302095633154050.db3"

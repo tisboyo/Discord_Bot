@@ -3,21 +3,22 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
-import logging
-from datetime import datetime, timezone, timedelta
+import asyncio
 import json
+import logging
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
-import asyncio
-
-from util.database import Database
-from util.permissions import Permissions
-from util.utils import Utils, Dictionary
 
 from keys import twitch as twitch_settings
+from util.database import Database
+from util.permissions import Permissions
+from util.utils import Dictionary
+from util.utils import Utils
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class Twitch(commands.Cog):
     async def on_message(self, message):
         # Guard Clause
         if (
-            message.guild == None  # Not in a guild means DM or Group chat.
+            message.guild is None  # Not in a guild means DM or Group chat.
             or Database.Bot["sleeping"]  # If the bot is sleeping, don't do anything.
         ):
             return
@@ -115,7 +116,7 @@ class Twitch(commands.Cog):
                 Default Permissions: Guild Administrator only
         """
         # Guard Clause
-        if ctx.guild == None:  # Not in a guild means DM or Group chat.
+        if ctx.guild is None:  # Not in a guild means DM or Group chat.
             return
 
         # Wait until the on_ready has fired before proceeding.
@@ -153,7 +154,7 @@ class Twitch(commands.Cog):
                 Default Permissions: Guild Administrator only
         """
         # Guard Clause
-        if ctx.guild == None:  # Not in a guild means DM or Group chat.
+        if ctx.guild is None:  # Not in a guild means DM or Group chat.
             return
 
         # Wait until the on_ready has fired before proceeding.
@@ -191,7 +192,7 @@ class Twitch(commands.Cog):
         Lists the Twitch channels and Discord channels they post in.
         """
         # Guard Clause
-        if ctx.guild == None:  # Not in a guild means DM or Group chat.
+        if ctx.guild is None:  # Not in a guild means DM or Group chat.
             return
 
         # Wait until the on_ready has fired before proceeding.
@@ -265,6 +266,9 @@ class Twitch(commands.Cog):
         Twitch.view_count = streamer_view_count
         Twitch.profile_update = datetime.now()
 
+    def cog_unload(self):
+        logger.info(f"{__name__} unloaded...")
+
 
 async def get_twitch_status():
     """
@@ -284,68 +288,72 @@ async def get_twitch_status():
         await asyncio.sleep(1)
 
     while True:
-        logger.debug("Starting Twitch status retrieval")
-        streams_params = {"user_login": list(Twitch.streamers.keys())}
+        try:
+            logger.debug("Starting Twitch status retrieval")
+            streams_params = {"user_login": list(Twitch.streamers.keys())}
 
-        # If there aren't any streamers in the list, don't do any queries
-        if len(Twitch.streamers) > 0:
-            # Get the status
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get(streams_url, params=streams_params, headers=Twitch.headers) as r:
-                    streams_data = await r.json()
-                    streams_data = streams_data["data"]
+            # If there aren't any streamers in the list, don't do any queries
+            if len(Twitch.streamers) > 0:
+                # Get the status
+                async with aiohttp.ClientSession() as cs:
+                    async with cs.get(streams_url, params=streams_params, headers=Twitch.headers) as r:
+                        streams_data = await r.json()
+                        streams_data = streams_data["data"]
 
-            # If we haven't gotten the profile pictures in the last hour, grab them
-            if Twitch.profile_update > (datetime.now() + timedelta(hours=1)):
-                await Twitch.get_twitch_profiles()
+                # If we haven't gotten the profile pictures in the last hour, grab them
+                if Twitch.profile_update > (datetime.now() + timedelta(hours=1)):
+                    await Twitch.get_twitch_profiles()
 
-            for streamers in streams_data:  # Walk through the returned json object
-                user_name = streamers["user_name"].lower()
-                started_at = streamers["started_at"]
+                for streamers in streams_data:  # Walk through the returned json object
+                    user_name = streamers["user_name"].lower()
+                    started_at = streamers["started_at"]
 
-                # Make sure we actually care about the streamer returned
-                if Twitch.streamers.get(user_name, False) and (
-                    Twitch.streamers[user_name].get("started_at", None) != started_at
-                ):
-                    for channel in Twitch.streamers[user_name]["channels"]:
-                        logger.info(f"Announcing Twitch stream for {user_name}")
-                        embed = discord.Embed(
-                            title=f"{streamers['user_name']} is live!",
-                            url=f"https://twitch.tv/{user_name}",
-                            timestamp=datetime.strptime(started_at, "%Y-%m-%dT%H:%M:%S%z"),  # 2020-09-08T19:30:09Z
-                            color=discord.Color.green(),
-                            type="rich",
-                        )
-                        if user_name == "baldengineer":  # TODO #27
-                            embed.set_image(url="https://baldengineer.com/thumb-for-twitch.jpg")
-                        else:
+                    # Make sure we actually care about the streamer returned
+                    if Twitch.streamers.get(user_name, False) and (
+                        Twitch.streamers[user_name].get("started_at", None) != started_at
+                    ):
+                        for channel in Twitch.streamers[user_name]["channels"]:
+                            logger.info(f"Announcing Twitch stream for {user_name}")
+                            embed = discord.Embed(
+                                title=f"{streamers['user_name']} is live!",
+                                url=f"https://twitch.tv/{user_name}",
+                                timestamp=datetime.strptime(started_at, "%Y-%m-%dT%H:%M:%S%z"),  # 2020-09-08T19:30:09Z
+                                color=discord.Color.green(),
+                                type="rich",
+                            )
                             embed.set_image(url=streamers["thumbnail_url"].format(width=640, height=480))
+                            embed.set_thumbnail(url=Twitch.profile_picture[user_name])
+                            embed.add_field(
+                                name=streamers["user_name"],
+                                value=streamers["title"] if streamers["title"] else f"{streamers['user_name']} stream.",
+                                inline=True,
+                            )
+                            embed.set_footer(text="Stream started")
 
-                        embed.set_thumbnail(url=Twitch.profile_picture[user_name])
-                        embed.add_field(
-                            name=streamers["user_name"],
-                            value=streamers["title"] if streamers["title"] else f"{streamers['user_name']} stream.",
-                            inline=True,
-                        )
-                        embed.set_footer(text=f"Stream started")
+                            await channel.send(
+                                f"{streamers['user_name']} is live on Twitch at https://twitch.tv/{user_name}",
+                                embed=embed,
+                            )
+                            Twitch.streamers[user_name]["started_at"] = started_at
+                    elif Twitch.streamers[user_name].get("started_at", None) == started_at:
+                        logger.debug(f"{streamers['user_name']} is live but already announced.")
 
-                        await channel.send(
-                            f"{streamers['user_name']} is live on Twitch at https://twitch.tv/{user_name}",
-                            embed=embed,
-                        )
-                        Twitch.streamers[user_name]["started_at"] = started_at
-                elif Twitch.streamers[user_name].get("started_at", None) == started_at:
-                    logger.debug(f"{streamers['user_name']} is live but already announced.")
+                logger.debug("Twitch statuses retrieved")
 
-            logger.debug("Twitch statuses retrieved")
+            # Save what time the next run will be, used in the list command
+            Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=300)
 
-        # Save what time the next run will be, used in the list command
-        Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=300)
+            await asyncio.sleep(300)  # 300 = 5 Minutes
 
-        await asyncio.sleep(300)  # 300 = 5 Minutes
+        except aiohttp.client_exceptions.ClientConnectionError:
+            logger.warning("Twitch connection error.")
+            await asyncio.sleep(300)
 
-    def cog_unload(self):
-        logger.info(f"{__name__} unloaded...")
+        except Exception as e:
+            logger.warning("Twitch loop exception!")
+            logger.warning(e)
+            logger.warning(type(e))
+            await asyncio.sleep(300)
 
 
 def setup(client):

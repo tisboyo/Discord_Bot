@@ -3,7 +3,6 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import datetime
 import json
 import logging
@@ -13,8 +12,9 @@ import discord
 from discord.ext import commands
 
 from util.database import Database
-from util.utils import Utils, dotdict
 from util.permissions import Permissions
+from util.utils import dotdict
+from util.utils import Utils
 
 logger = logging.getLogger(__name__)
 
@@ -42,21 +42,21 @@ class Levels(commands.Cog):
             # Create the initial table
             query.append(
                 """
-				   CREATE TABLE IF NOT EXISTS levels(
-				   user_id TEXT,
-				   exp TEXT DEFAULT '0',
-				   level TEXT DEFAULT '0',
-				   messages TEXT DEFAULT '0',
-				   words TEXT DEFAULT '0',
-				   lastseen TEXT DEFAULT '0',
-				   lastseenurl TEXT DEFAULT NULL,
-				   lastexp TEXT DEFAULT NULL,
-				   nickname_history TEXT DEFAULT NULL,
-				   upvotes TEXT DEFAULT '0',
-				   downvotes TEXT DEFAULT '0',
-				   PRIMARY KEY("user_id")
-				   )
-				   """
+                   CREATE TABLE IF NOT EXISTS levels(
+                   user_id TEXT,
+                   exp TEXT DEFAULT '0',
+                   level TEXT DEFAULT '0',
+                   messages TEXT DEFAULT '0',
+                   words TEXT DEFAULT '0',
+                   lastseen TEXT DEFAULT '0',
+                   lastseenurl TEXT DEFAULT NULL,
+                   lastexp TEXT DEFAULT NULL,
+                   nickname_history TEXT DEFAULT NULL,
+                   upvotes TEXT DEFAULT '0',
+                   downvotes TEXT DEFAULT '0',
+                   PRIMARY KEY("user_id")
+                   )
+                   """
             )
             current_ver = 1
 
@@ -92,7 +92,7 @@ class Levels(commands.Cog):
         cursor = Database.cursor[guild.id]
 
         # Load the members currently in the database
-        query = f"SELECT user_id FROM users"
+        query = "SELECT user_id FROM users"
         db_members = Database.dbExecute(self, cursor, guild.id, query, list(), True)
 
         # Create a list of members currently in the database
@@ -106,8 +106,8 @@ class Levels(commands.Cog):
             if member.id not in db_member_list:
                 # Insert the member into the database
                 query = """INSERT OR IGNORE INTO
-				users(user_id, exp, level, words, messages, lastseen, lastseenurl)
-				VALUES(?,?,?,?,?,?,?)"""
+                users(user_id, exp, level, words, messages, lastseen, lastseenurl)
+                VALUES(?,?,?,?,?,?,?)"""
                 values = (member.id, 0, 0, 0, 0, 0, None)
                 # We don't need to save the result of this
                 Database.dbExecute(self, cursor, member.guild.id, query, values)
@@ -132,8 +132,8 @@ class Levels(commands.Cog):
 
         # Insert the member into the database
         query = """INSERT OR IGNORE INTO
-		users(user_id, exp, level, words, messages, lastseen, lastseenurl)
-		VALUES(?,?,?,?,?,?,?)"""
+        users(user_id, exp, level, words, messages, lastseen, lastseenurl)
+        VALUES(?,?,?,?,?,?,?)"""
         values = (member.id, 0, 0, 0, 0, 0, None)
         # We don't need to save the result of this
         Database.dbExecute(self, cursor, member.guild.id, query, values)
@@ -242,7 +242,10 @@ class Levels(commands.Cog):
 
             for each in mentions:
 
-                query = "SELECT exp, level, words, messages, lastseen, lastseenurl, upvotes, downvotes FROM users where user_id = ?"
+                query = (
+                    "SELECT exp, level, words, messages, lastseen, lastseenurl, upvotes, downvotes "
+                    "FROM users where user_id = ?"
+                )
                 vals = (each.id,)
                 result = Database.dbExecute(self, cursor, ctx.guild.id, query, vals)
 
@@ -275,7 +278,7 @@ class Levels(commands.Cog):
         if (
             message.author.bot
             or len(message.content) == 0  # No points for bots
-            or message.guild == None  # No message contents, users join/leave/reactions
+            or message.guild is None  # No message contents, users join/leave/reactions
             or message.content[0]  # Not in a guild means DM or Group chat.
             == Database.Main[message.guild.id].get("prefix", ".")  # No points for commands
         ):
@@ -305,11 +308,11 @@ class Levels(commands.Cog):
 
         # The if statements take care of blank fields in the database by giving a default value
         # Blank responses shouldn't happen unless they are a new user
-        exp = int(result[0]) if result[0] != None else 0
-        level = int(result[1]) if result[1] != None else 0
-        words = int(result[2]) + wordCount if result[2] != None else wordCount
-        messages = int(result[3]) + 1 if result[3] != None else 1
-        lastexp = result[4] if result[4] != None else str(datetime.datetime.now())
+        exp = int(result[0]) if result[0] is not None else 0
+        level = int(result[1]) if result[1] is not None else 0
+        words = int(result[2]) + wordCount if result[2] is not None else wordCount
+        messages = int(result[3]) + 1 if result[3] is not None else 1
+        lastexp = result[4] if result[4] is not None else str(datetime.datetime.now())
 
         # Convert time from database to a datetime object
         t_format = "%Y-%m-%d %H:%M:%S.%f"
@@ -323,7 +326,10 @@ class Levels(commands.Cog):
             lastexp = datetime.datetime.now()
 
         # Update to their new values
-        query = "UPDATE users SET exp = ?, level = ?, words = ?, messages = ?, lastseen = ?, lastseenurl = ?, lastexp = ? WHERE user_id = ?"
+        query = (
+            "UPDATE users SET exp = ?, level = ?, words = ?, messages = ?, "
+            "lastseen = ?, lastseenurl = ?, lastexp = ? WHERE user_id = ?"
+        )
         values = (
             exp,
             level,

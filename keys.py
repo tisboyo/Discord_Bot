@@ -3,13 +3,13 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import logging
 import os
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env
-load_dotenv()
+load_dotenv(encoding="UTF-8")
 
 
 # Logging level

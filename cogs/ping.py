@@ -3,15 +3,15 @@
 Discord Bot for HardwareFlare and others
 @author: Tisboyo
 """
-
 import logging
 
-# import discord
 from discord.ext import commands
 
-# from util.database import Database
 from util.permissions import Permissions
 from util.utils import Utils
+
+# import discord
+# from util.database import Database
 
 logger = logging.getLogger(__name__)
 
