@@ -74,7 +74,7 @@ class Voice(commands.Cog):
     async def on_message(self, message):
 
         # Guard Clause
-        if message.guild == None or message.author.bot:  # Not in a guild means DM or Group chat.  # Ignore bots
+        if message.guild is None or message.author.bot:  # Not in a guild means DM or Group chat.  # Ignore bots
             return
 
         last_message_channels = Database.Cogs[self.name][message.guild.id]
@@ -93,9 +93,9 @@ class Voice(commands.Cog):
 
         if (
             # Unable to find a voice channel with the name of the current text channel
-            voice_channel == None
+            voice_channel is None
             # Author is not in voice at all
-            or ctx.message.author.voice == None
+            or ctx.message.author.voice is None
             # Author is not in the right voice channel
             or ctx.message.author.voice.channel != voice_channel
         ):
