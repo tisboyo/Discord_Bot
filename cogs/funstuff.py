@@ -48,9 +48,7 @@ class FunStuff(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # Guard Clause
-        if message.guild == None:  # Not in a guild means DM or Group chat.
-            return
+        # Guard Clause is inline to allow some usage in DM's
 
         # Strip punctuation, and force to lower case
         msg_no_lower: str = re.sub("[" + string.punctuation + "]", "", message.content)
@@ -59,31 +57,11 @@ class FunStuff(commands.Cog):
         # Establish a wait time between sending the same message
         wait_time = datetime.timedelta(minutes=5)
 
-        if ("snow" in msg) and (message.guild.id == 425699298957852672 or message.guild.id == 378302095633154050):
-            # 425699298957852672 - HardwareFlare
-            # 378302095633154050 - MyServer
-            # 220348421259657218 - Runeadair
-
-            if self.last_run.get("snow", datetime.datetime.min) + wait_time <= datetime.datetime.now():
-                phrases = [
-                    "<@220348421259657218> https://tenor.com/37es.gif ",
-                    f"<@220348421259657218>, {message.author.mention} is using evil 4 letter words!!!",
-                ]
-                rand_phrase = random.choice(phrases)
-                await message.channel.send(rand_phrase)
-
-                self.last_run["snow"] = datetime.datetime.now()
-
-            else:
-                cooldown = (self.last_run["snow"] + wait_time) - datetime.datetime.now()
-                logger.info(f"Snow is on cooldown for another {cooldown}.")
-                await message.add_reaction("⏳")
-
-        elif "good bot" in msg:
+        if "good bot" in msg:
             await message.channel.send(f"Well thank you {message.author.mention}.")
 
         elif "dats right bot" in msg:
-            await message.channel.send(f"You know it is.")
+            await message.channel.send("You know it is.")
 
         elif ("bad bot" in msg) or ("fu bot" in msg):
             await message.add_reaction("👎")
@@ -92,7 +70,7 @@ class FunStuff(commands.Cog):
             await message.channel.send(f"You're welcome {message.author}")
 
         elif "(╯°□°）╯︵ ┻━┻" == message.content:  # Doesn't use the processed msg variable because of needed punctuation.
-            await message.channel.send(f"┬─┬ ノ( ゜-゜ノ) - Here let me put that back for you.")
+            await message.channel.send("┬─┬ ノ( ゜-゜ノ) - Here let me put that back for you.")
 
         elif "thats what she said" in msg:
             phrases = [
@@ -106,7 +84,7 @@ class FunStuff(commands.Cog):
         elif ("has the box shipped" in msg or "wheres the box" in msg) and message.channel.id == 426451859440664576:
             if self.last_run.get("box_shipped", datetime.datetime.min) + wait_time <= datetime.datetime.now():
 
-                await message.channel.send(f"http://www.hasthejunkerboxmoved.com")
+                await message.channel.send("http://www.hasthejunkerboxmoved.com")
                 self.last_run["box_shipped"] = datetime.datetime.now()
             else:
                 cooldown = (self.last_run["box_shipped"] + wait_time) - datetime.datetime.now()
@@ -121,13 +99,6 @@ class FunStuff(commands.Cog):
                 cooldown = (self.last_run["moving_on"] + wait_time) - datetime.datetime.now()
                 logger.info(f"Moving on is on cooldown for another {cooldown}.")
                 await message.add_reaction("⏳")
-
-        elif msg in ["🤦", "🤦‍♂️", "🤦‍♀️"] and message.channel.id in [
-            466048561994268682,
-            504084460954845194,
-            600768675645227037,
-        ]:
-            await message.channel.send(file=discord.File("images/baldengineer_facepalm.png"))
 
         elif msg in ["🙀", "😱"]:  # :scream_cat: or :scream:
             await message.channel.send(file=discord.File("images/peachcatboo.gif"))
@@ -158,12 +129,45 @@ class FunStuff(commands.Cog):
                 await asyncio.sleep(5)
                 await message.remove_reaction("⏳", self.client.user)
 
+        elif message.guild is None:  # Not in a guild means DM or Group chat.
+            return
+
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~NO DM's BEYOND THIS POINT!~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        elif ("snow" in msg) and (message.guild.id == 425699298957852672 or message.guild.id == 378302095633154050):
+            # 425699298957852672 - HardwareFlare
+            # 378302095633154050 - MyServer
+            # 220348421259657218 - Runeadair
+
+            if self.last_run.get("snow", datetime.datetime.min) + wait_time <= datetime.datetime.now():
+                phrases = [
+                    "<@220348421259657218> https://tenor.com/37es.gif ",
+                    f"<@220348421259657218>, {message.author.mention} is using evil 4 letter words!!!",
+                ]
+                rand_phrase = random.choice(phrases)
+                await message.channel.send(rand_phrase)
+
+                self.last_run["snow"] = datetime.datetime.now()
+
+            else:
+                cooldown = (self.last_run["snow"] + wait_time) - datetime.datetime.now()
+                logger.info(f"Snow is on cooldown for another {cooldown}.")
+                await message.add_reaction("⏳")
+
+        elif msg in ["🤦", "🤦‍♂️", "🤦‍♀️"] and message.channel.id in [
+            466048561994268682,
+            504084460954845194,
+            600768675645227037,
+        ]:
+            await message.channel.send(file=discord.File("images/baldengineer_facepalm.png"))
+
     @commands.group(hidden=True)
     @Permissions.check()
     async def fight(self, ctx, member: discord.Member):
         try:
             await ctx.message.delete()
-        except:
+        except Exception:
+            # No permissions
             pass
 
         await ctx.message.channel.send(f"I'm watching you {member.mention}. 🗡️⚔️")
