@@ -42,8 +42,9 @@ class ReactionRoles(commands.Cog):
         handle = Database.Cogs[self.name][guild_id]
 
         # Read the lists
+        query = "SELECT emoji, role, description FROM reaction_roles_values"
+
         try:
-            query = "SELECT emoji, role, description FROM reaction_roles_values"
             result = Database.dbExecute(self, cursor, guild_id, query, list(), True, hide_error=True)
             settingNum = 0
             for each_result in result:
@@ -52,14 +53,14 @@ class ReactionRoles(commands.Cog):
                     each_result[2],
                 ]
                 settingNum += 1
-            logger.debug(f"Reaction role values loaded.")
+            logger.debug("Reaction role values loaded.")
 
         except sqlite3.OperationalError as e:
             # The table doesn't exist, so we're going to create it and re-run the query.
             if "no such table" in e.args[0]:
                 insert_query = f"""CREATE TABLE IF NOT EXISTS {self.name}_values(
-									emoji TEXT, role TEXT, description TEXT,
-									PRIMARY KEY(role) )"""
+                                    emoji TEXT, role TEXT, description TEXT,
+                                    PRIMARY KEY(role) )"""
                 Database.dbExecute(self, cursor, guild_id, insert_query)
                 logger.info(f"{self.name}_values table created for {guild_id}.")
 
@@ -184,7 +185,7 @@ class ReactionRoles(commands.Cog):
             emoji = await commands.EmojiConverter().convert(ctx, emoji)
             emoji = str(emoji)
 
-        except:  # Not a custom on this server, must be a regular emoji
+        except Exception:  # Not a custom on this server, must be a regular emoji
             emoji = emoji
 
         # Check if the emoji is already in the list so we don't add it a second time.
@@ -198,7 +199,7 @@ class ReactionRoles(commands.Cog):
 
             except discord.HTTPException as e:
                 if e.code == 10014:
-                    await ctx.send(f"Sorry, but discord doesn't have that emoji in it's reaction library.")
+                    await ctx.send("Sorry, but discord doesn't have that emoji in it's reaction library.")
 
                     # Send failure to the user
                     await Utils.send_failure(self, ctx.message)
@@ -207,7 +208,7 @@ class ReactionRoles(commands.Cog):
                     return
 
                 elif e.code == 50013:
-                    await ctx.send(f"I'm sorry, but I'm not allowed to add reactions to messages.")
+                    await ctx.send("I'm sorry, but I'm not allowed to add reactions to messages.")
                     return
 
                 else:  # A different error code
@@ -259,7 +260,7 @@ class ReactionRoles(commands.Cog):
             emoji = await commands.EmojiConverter().convert(ctx, emoji)
             emoji = str(emoji)
 
-        except:  # Not a custom on this server, must be a regular emoji
+        except Exception:  # Not a custom on this server, must be a regular emoji
             pass
 
         # Check if we have a role associated with that emoji
@@ -476,7 +477,7 @@ class ReactionRoles(commands.Cog):
         """
         # Guard Clause is done inside on_raw_reaction_work
         role, member = await self.on_raw_reaction_work(payload)
-        if role == None:  # Happens when Guard Clause is hit
+        if role is None:  # Happens when Guard Clause is hit
             return
 
         try:
@@ -493,7 +494,7 @@ class ReactionRoles(commands.Cog):
         # Guard Clause is done inside on_raw_reaction_work
 
         role, member = await self.on_raw_reaction_work(payload)
-        if role == None:  # Happens when Guard Clause is hit
+        if role is None:  # Happens when Guard Clause is hit
             return
 
         try:
@@ -567,6 +568,10 @@ class ReactionRoles(commands.Cog):
                 # Error caused when not a guild custom emoji
                 if e.code == 50035:
                     emoji = payload.emoji.name
+                else:
+                    # Unknown error, notify of it and give up
+                    logger.error(e)
+                    return
 
             # Get the role id associated with the emoji
             role_id = int(Database.Cogs[self.name][payload.guild_id]["list"][emoji][0])
@@ -646,7 +651,7 @@ class ReactionRoles(commands.Cog):
         # messages = {'add_role':'add_role', 'remove_role':'remove_role',
         #            'remove_reaction':'remove_reaction','bad_channel_perms':'bad_channel_perms'}
 
-        message = messages[method] + f"\n\nIf you would like to stop all DM's from the bot, send the command .silencedm."
+        message = messages[method] + "\n\nIf you would like to stop all DM's from the bot, send the command .silencedm."
         await serverOwner.send(message)
 
     @reacttorole.error
