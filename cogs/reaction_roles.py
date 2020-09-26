@@ -506,7 +506,11 @@ class ReactionRoles(commands.Cog):
         """
         This function performs all of the actual work for both adding and removing a role
         """
-        settings = Database.Cogs[self.name][payload.guild_id]["settings"]
+        # Make sure this isn't a DM before trying to grab the settings
+        if payload.guild_id is not None:
+            settings = Database.Cogs[self.name][payload.guild_id]["settings"]
+        else:
+            return None, None
 
         # Guard Clause
         if (  # The bot is currently deleting or doing something with the message.
