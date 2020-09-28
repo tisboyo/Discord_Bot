@@ -129,6 +129,9 @@ class FunStuff(commands.Cog):
                 await asyncio.sleep(5)
                 await message.remove_reaction("⏳", self.client.user)
 
+        elif "smart led" in msg and not message.author.bot:
+            await message.channel.send("What's a smart LED? Do you mean WS2812 or Neopixel?")
+
         elif message.guild is None:  # Not in a guild means DM or Group chat.
             return
 
