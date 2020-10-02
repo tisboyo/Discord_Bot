@@ -122,8 +122,8 @@ class ReactionRoles(commands.Cog):
             if ctx.message.channel.permissions_for(ctx.guild.me).send_messages:
                 await ctx.send(f"I am unable to send messages in {textchannel.mention}")
             else:
-                serverOwner = ctx.message.guild.owner
-                await serverOwner.send(f"I am unable to send messages in {textchannel.mention} for React To Role")
+                requester = ctx.message.author
+                await requester.send(f"I am unable to send messages in {textchannel.mention} for React To Role")
 
             return
 
