@@ -162,11 +162,7 @@ class FunStuff(commands.Cog):
                 logger.info(f"Snow is on cooldown for another {cooldown}.")
                 await message.add_reaction("⏳")
 
-        elif msg in ["🤦", "🤦‍♂️", "🤦‍♀️"] and message.channel.id in [
-            466048561994268682,
-            504084460954845194,
-            600768675645227037,
-        ]:
+        elif msg in ["🤦", "🤦‍♂️", "🤦‍♀️"]:
             await message.channel.send(file=discord.File("images/baldengineer_facepalm.png"))
 
     @commands.group(hidden=True)
