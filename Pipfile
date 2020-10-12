@@ -7,6 +7,7 @@ verify_ssl = true
 wheel = "*"
 flake8 = "*"
 ptvsd = "*"
+pre-commit = "*"
 
 [packages]
 pipenv = "*"
