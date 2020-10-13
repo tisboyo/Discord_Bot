@@ -69,7 +69,7 @@ def get_prefix(client, message):
     return commands.when_mentioned_or(prefix)(client, message)
 
 
-client = commands.Bot(command_prefix=get_prefix, case_insensitive=True)
+client = commands.Bot(command_prefix=get_prefix, case_insensitive=True, intents=discord.Intents.all())
 
 
 @client.event
@@ -116,10 +116,10 @@ async def unloadcog(ctx, extension):
 async def listcog(ctx):
     """List loaded cogs to console (Bot owner and DM only)."""
 
-    print(f"Printing loaded cogs".center(80, "*"))
+    print("Printing loaded cogs".center(80, "*"))
 
     if len(Database.Bot["loaded_cogs"]) == 0:
-        print(f"No cogs are loaded.")
+        print("No cogs are loaded.")
         return
 
     # Loop through the cogs that are currently loaded.
@@ -136,8 +136,9 @@ client.load_extension("util.utils")
 # Something changed in discord.py==1.3.0 that would recreate these objects
 # instead of updating them to the same object. Loading them here makes
 # them accessible throughout.
-from util.database import Database
-from util.utils import Utils
+# noreorder
+from util.database import Database  # noqa: E402
+from util.utils import Utils  # noqa: E402
 
 # Create our list of loaded cogs
 Database.Bot["loaded_cogs"] = list()
