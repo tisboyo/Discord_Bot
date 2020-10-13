@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 # Set pip to have cleaner logs and no saved cache
 ENV PIP_NO_CACHE_DIR=false \
@@ -30,7 +30,7 @@ RUN wget https://raw.githubusercontent.com/tisboyo/Discord_Bot/$branch/init.sh -
 
 # Install needed libraries
 RUN apt-get update && apt-get install -y \
-	git \
+    git \
     libespeak1 \
     ffmpeg
 
