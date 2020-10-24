@@ -14,6 +14,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
+from keys import error_channel_webhook
 from keys import twitch as twitch_settings
 from util.database import Database
 from util.permissions import Permissions
@@ -287,8 +288,16 @@ async def get_twitch_status():
         logger.info("Waiting for on_ready")
         await asyncio.sleep(1)
 
+    first_loop = True
+
     while True:
         try:
+            # Skips the sleep cycle for the first loop when the bot runs.
+            if first_loop:
+                first_loop = False
+            else:
+                await asyncio.sleep(300)  # 300 = 5 Minutes
+
             logger.debug("Starting Twitch status retrieval")
             streams_params = {"user_login": list(Twitch.streamers.keys())}
 
@@ -298,8 +307,33 @@ async def get_twitch_status():
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(streams_url, params=streams_params, headers=Twitch.headers) as r:
                         streams_data = await r.json()
-                        streams_data = streams_data["data"]
 
+                        try:
+                            streams_data = streams_data["data"]
+                        except KeyError:
+                            if streams_data.get("error", False):
+                                if streams_data["message"] == "Invalid OAuth token":
+                                    error_message = "<@219518082266300417> Invalid Twitch Oauth token!!"
+                                else:
+                                    error_message = f"<@219518082266300417> Twitch: {streams_data['message']}"
+
+                                logger.warning(f"{streams_data['status']} : {streams_data['message']}")
+                            else:
+                                logger.warning("Unknown KeyError")
+                                error_message = "<@219518082266300417> Unknown KeyError in cogs.twitch.get_twitch_status"
+
+                            # Send error to discord channel
+                            if error_channel_webhook is not None:
+                                async with aiohttp.ClientSession() as session:
+                                    # Not catching the response, because if it errors it doesn't matter
+                                    await session.post(
+                                        error_channel_webhook,
+                                        json={"content": error_message},
+                                    )
+                            else:
+                                logger.warning("error_channel_webhook is not set")
+
+                            continue
                 # If we haven't gotten the profile pictures in the last hour, grab them
                 if Twitch.profile_update > (datetime.now() + timedelta(hours=1)):
                     await Twitch.get_twitch_profiles()
@@ -342,8 +376,6 @@ async def get_twitch_status():
 
             # Save what time the next run will be, used in the list command
             Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=300)
-
-            await asyncio.sleep(300)  # 300 = 5 Minutes
 
         except aiohttp.client_exceptions.ClientConnectionError:
             logger.warning("Twitch connection error.")

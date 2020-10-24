@@ -53,3 +53,5 @@ twitch = dict(
     # OAuth Key
     key=os.getenv("twitch_key"),
 )
+
+error_channel_webhook = os.getenv("error_webhook")
