@@ -355,7 +355,11 @@ async def get_twitch_status():
                                 color=discord.Color.green(),
                                 type="rich",
                             )
-                            embed.set_image(url=streamers["thumbnail_url"].format(width=640, height=480))
+
+                            if user_name == "baldengineer":  # TODO #27
+                                embed.set_image(url="https://baldengineer.com/thumb-for-twitch.jpg")
+                            else:
+                                embed.set_image(url=streamers["thumbnail_url"].format(width=640, height=480))
                             embed.set_thumbnail(url=Twitch.profile_picture[user_name])
                             embed.add_field(
                                 name=streamers["user_name"],
