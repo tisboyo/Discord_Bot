@@ -315,7 +315,7 @@ async def get_twitch_status():
                                 if streams_data["message"] == "Invalid OAuth token":
                                     error_message = (
                                         "<@219518082266300417> Invalid Twitch Oauth token!! "
-                                        "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={Twitch.client_id}&redirect_uri=https://twitchapps.com/tokengen/ "  # noqa E501
+                                        f"https://id.twitch.tv/oauth2/authorize?response_type=token&client_id={Twitch.client_id}&redirect_uri=https://twitchapps.com/tokengen/ "  # noqa E501
                                     )
                                 else:
                                     error_message = f"<@219518082266300417> Twitch: {streams_data['message']}"
