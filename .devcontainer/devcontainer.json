@@ -12,8 +12,12 @@
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
+		"runarsf.platform-settings",
+		"ms-python.vscode-pylance",
 		"ms-python.python",
-		"ms-python.vscode-pylance"
+		"eamodio.gitlens",
+		"ms-azuretools.vscode-docker",
+		"github.vscode-pull-request-github"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
