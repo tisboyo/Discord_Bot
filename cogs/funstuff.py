@@ -121,18 +121,18 @@ class FunStuff(commands.Cog):
         elif ":facedesk:" in message.content.lower():
             await message.channel.send("https://tenor.com/yWTN.gif")
 
-        elif (msg.upper() == msg_no_lower) and (not message.author.bot) and (len(msg) > 4) and (not msg.isnumeric()):
-            if self.last_run.get("yelling", datetime.datetime.min) + wait_time <= datetime.datetime.now():
-                msg = await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
-                self.last_run["yelling"] = datetime.datetime.now()
-                await asyncio.sleep(8)
-                await msg.delete()
+        # elif (msg.upper() == msg_no_lower) and (not message.author.bot) and (len(msg) > 4) and (not msg.isnumeric()):
+        #     if self.last_run.get("yelling", datetime.datetime.min) + wait_time <= datetime.datetime.now():
+        #         msg = await message.channel.send(f"WHY ARE WE YELLING {message.author.mention}?")
+        #         self.last_run["yelling"] = datetime.datetime.now()
+        #         await asyncio.sleep(8)
+        #         await msg.delete()
 
-            else:
-                await message.add_reaction("👎")
-                await message.add_reaction("⏳")
-                await asyncio.sleep(5)
-                await message.remove_reaction("⏳", self.client.user)
+        #     else:
+        #         await message.add_reaction("👎")
+        #         await message.add_reaction("⏳")
+        #         await asyncio.sleep(5)
+        #         await message.remove_reaction("⏳", self.client.user)
 
         elif "smart led" in msg and not message.author.bot:
             await message.channel.send("What's a smart LED? Do you mean WS2812 or Neopixel?")
