@@ -39,6 +39,7 @@ class Twitch(commands.Cog):
     profile_update = datetime.max
     ready = False
     next_live_query = datetime.min
+    seconds_between_checks = 300  # Caching doesn't allow checking more frequently
 
     def __init__(self, client):
         self.client = client
@@ -296,7 +297,9 @@ async def get_twitch_status():
             if first_loop:
                 first_loop = False
             else:
-                await asyncio.sleep(300)  # 300 = 5 Minutes
+                sleep = Twitch.next_live_query - datetime.now(tz=timezone.utc)
+                logger.debug(f"Sleeping for {sleep.seconds} seconds.")
+                await asyncio.sleep(sleep.seconds)
 
             logger.debug("Starting Twitch status retrieval")
             streams_params = {"user_login": list(Twitch.streamers.keys())}
@@ -383,17 +386,17 @@ async def get_twitch_status():
                 logger.debug("Twitch statuses retrieved")
 
             # Save what time the next run will be, used in the list command
-            Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=300)
+            Twitch.next_live_query = datetime.now(tz=timezone.utc) + timedelta(seconds=Twitch.seconds_between_checks)
 
         except aiohttp.client_exceptions.ClientConnectionError:
             logger.warning("Twitch connection error.")
-            await asyncio.sleep(300)
+            await asyncio.sleep(Twitch.seconds_between_checks)
 
         except Exception as e:
             logger.warning("Twitch loop exception!")
             logger.warning(e)
             logger.warning(type(e))
-            await asyncio.sleep(300)
+            await asyncio.sleep(Twitch.seconds_between_checks)
 
 
 def setup(client):
