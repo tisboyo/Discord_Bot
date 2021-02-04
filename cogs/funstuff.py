@@ -117,6 +117,12 @@ class FunStuff(commands.Cog):
             "😉",
         ]:  # :wink:
             await message.channel.send(file=discord.File("images/wink.png"))
+
+        elif msg in [
+            "🐈",
+        ]:  #:cat
+            await message.channel.send(file=discord.File("images/cat.png"))
+
         elif msg == "427578603207917580 no":
             await message.channel.send(
                 "NO <@!427578603207917580>! https://tenor.com/view/jermichael-no-urn-spray-bottle-spray-gif-13258723"
