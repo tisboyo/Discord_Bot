@@ -367,7 +367,7 @@ async def get_twitch_status():
                         )
 
                         # If user is baldengineer send a special image
-                        if user_name == "tisboyo":  # TODO #27
+                        if user_name == "baldengineer":  # TODO #27
                             date = datetime.now().strftime("%Y-%m-%d")
                             remote_image_url = f"https://baldengineer.com/thumbs/twitch-{date}.jpg"
 
