@@ -9,6 +9,7 @@ import logging
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+from io import BytesIO
 
 import aiohttp
 import discord
@@ -241,7 +242,7 @@ class Twitch(commands.Cog):
         Database.writeSettings(self, guild.id)
 
     @classmethod
-    async def get_twitch_profiles(self):
+    async def get_twitch_profiles(cls):
         """
         Retrieves the streams profile information
         Primarily profile picture
@@ -352,35 +353,65 @@ async def get_twitch_status():
                     if Twitch.streamers.get(user_name, False) and (
                         Twitch.streamers[user_name].get("started_at", None) != started_at
                     ):
+                        file = discord.File("images/twitch.jpg", filename="twitch-image.jpg")
+                        # Set url to pass to discord
+                        image_url = "attachment://twitch-image.jpg"
+
+                        logger.info(f"Announcing Twitch stream for {user_name}")
+                        embed = discord.Embed(
+                            title=f"{streamers['user_name']} is live!",
+                            url=f"https://twitch.tv/{user_name}",
+                            timestamp=datetime.strptime(started_at, "%Y-%m-%dT%H:%M:%S%z"),  # 2020-09-08T19:30:09Z
+                            color=discord.Color.green(),
+                            type="rich",
+                        )
+
+                        # If user is baldengineer send a special image
+                        if user_name == "tisboyo":  # TODO #27
+                            date = datetime.now().strftime("%Y-%m-%d")
+                            remote_image_url = f"https://baldengineer.com/thumbs/twitch-{date}.jpg"
+
+                        else:
+                            remote_image_url = streamers["thumbnail_url"].format(width=640, height=480)
+
+                        # Download the embed image
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(remote_image_url) as resp:
+                                if resp.status == 200:
+
+                                    buffer = BytesIO(await resp.read())
+                                    # Use response object as file object
+                                    file = discord.File(buffer, filename="twitch-image.jpg")
+
+                        embed.set_image(url=image_url)
+
+                        embed.set_thumbnail(url=Twitch.profile_picture[user_name])
+                        embed.add_field(
+                            name=streamers["user_name"],
+                            value=streamers["title"] if streamers["title"] else f"{streamers['user_name']} stream.",
+                            inline=True,
+                        )
+                        embed.set_footer(text="Stream started")
+
+                        live_message = f"{streamers['user_name']} is live on Twitch at https://twitch.tv/{user_name}"
+
+                        # Log that we've already announced this stream
+                        Twitch.streamers[user_name]["started_at"] = started_at
+
+                        # Send the message
                         for channel in Twitch.streamers[user_name]["channels"]:
-                            logger.info(f"Announcing Twitch stream for {user_name}")
-                            embed = discord.Embed(
-                                title=f"{streamers['user_name']} is live!",
-                                url=f"https://twitch.tv/{user_name}",
-                                timestamp=datetime.strptime(started_at, "%Y-%m-%dT%H:%M:%S%z"),  # 2020-09-08T19:30:09Z
-                                color=discord.Color.green(),
-                                type="rich",
-                            )
+                            if file:  # If the file exists, send it
+                                await channel.send(
+                                    live_message,
+                                    embed=embed,
+                                    file=file,
+                                )
+                            else:  # Otherwise don't try to send file
+                                await channel.send(
+                                    live_message,
+                                    embed=embed,
+                                )
 
-                            if user_name == "baldengineer":  # TODO #27
-                                date = datetime.now().strftime("%Y-%m-%d")
-                                image_url = f"https://baldengineer.com/thumbs/twitch-{date}.jpg"
-                                embed.set_image(url=image_url)
-                            else:
-                                embed.set_image(url=streamers["thumbnail_url"].format(width=640, height=480))
-                            embed.set_thumbnail(url=Twitch.profile_picture[user_name])
-                            embed.add_field(
-                                name=streamers["user_name"],
-                                value=streamers["title"] if streamers["title"] else f"{streamers['user_name']} stream.",
-                                inline=True,
-                            )
-                            embed.set_footer(text="Stream started")
-
-                            await channel.send(
-                                f"{streamers['user_name']} is live on Twitch at https://twitch.tv/{user_name}",
-                                embed=embed,
-                            )
-                            Twitch.streamers[user_name]["started_at"] = started_at
                     elif Twitch.streamers[user_name].get("started_at", None) == started_at:
                         logger.debug(f"{streamers['user_name']} is live but already announced.")
 
