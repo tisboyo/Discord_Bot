@@ -114,6 +114,11 @@ class FunStuff(commands.Cog):
             await message.channel.send(file=discord.File("images/confused.png"))
 
         elif msg in [
+            "⭐",
+        ]:  # :confused:
+            await message.channel.send(file=discord.File("images/reading.png"))
+
+        elif msg in [
             "😉",
         ]:  # :wink:
             await message.channel.send(file=discord.File("images/wink.png"))
