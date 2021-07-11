@@ -20,6 +20,7 @@ asyncio-mqtt = "*"
 pip = "==21.1.3"
 certifi = "==2021.5.30"
 update = "*"
+aiohttp = ">=3.7.4"
 
 [requires]
 python_version = "3.9"
