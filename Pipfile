@@ -17,6 +17,7 @@ pyttsx3 = "*"
 python-dotenv = "*"
 gtts = "*"
 asyncio-mqtt = "*"
+pip = "*"
 
 [requires]
 python_version = "3.9"
